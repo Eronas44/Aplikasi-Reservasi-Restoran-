@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -12,6 +13,10 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    protected $primaryKey = 'user_id';
+
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -21,7 +26,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone_number',
         'password',
+        'role',
     ];
 
     /**
@@ -42,8 +49,17 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function reservations(): HasMany
+    {
+        return $this->hasMany(Reservation::class, 'user_id', 'user_id');
+    }
+
+    public function handledReservations(): HasMany
+    {
+        return $this->hasMany(Reservation::class, 'staff_id', 'user_id');
     }
 }
