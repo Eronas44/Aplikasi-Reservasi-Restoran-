@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +28,23 @@ class AuthController extends Controller
             'message' => 'Login success.',
             'data' => $request->user(),
         ]);
+    }
+
+    public function register(RegisterRequest $request): JsonResponse
+    {
+        $user = User::query()->create([
+            ...$request->validated(),
+            'role' => $request->input('role', 'customer'),
+        ]);
+
+        Auth::login($user);
+
+        $request->session()->regenerate();
+
+        return response()->json([
+            'message' => 'Registration success.',
+            'data' => $user,
+        ], 201);
     }
 
     public function me(Request $request): JsonResponse

@@ -1,31 +1,65 @@
 services:
+  # ==================== FRONTEND ====================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: eronas-frontend
+    ports:
+      - "8000:8000"
+    environment:
+      NODE_ENV: production
+      API_URL: http://backend:8000
+    volumes:
+      - ./frontend/index.php:/app/index.php:ro
+      - ./frontend/src:/app/src:ro
+      - ./frontend/public:/app/public:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - eronas-network
+
+  # ==================== BACKEND ====================
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: eronas-backend
     ports:
-      - "8000:8000"
+      - "8080:8000"
+    command: ["sh", "-c", "cd /var/www/html/public && exec php -S 0.0.0.0:8000 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php"]
     environment:
       APP_ENV: production
       APP_DEBUG: "false"
-      APP_URL: http://localhost:8000
+      APP_URL: http://localhost:8080
+      API_URL: http://localhost:8080
+      FRONTEND_URL: http://localhost:8000
       DB_CONNECTION: sqlite
       DB_DATABASE: /var/www/html/database/database.sqlite
       SESSION_DRIVER: database
       CACHE_STORE: database
       QUEUE_CONNECTION: database
+      PHP_INI_SCAN_DIR: /usr/local/etc/php/conf.d:/var/www/html/docker/conf.d
     volumes:
       - backend_storage:/var/www/html/storage
       - backend_db:/var/www/html/database
+      - ./backend:/var/www/html
+      - ./backend/docker/conf.d:/var/www/html/docker/conf.d:ro
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8000/up"]
+      test: ["CMD", "wget", "-q", "-T", "10", "-O", "-", "http://localhost:8000/up"]
       interval: 15s
-      timeout: 5s
+      timeout: 15s
       retries: 5
       start_period: 25s
     restart: unless-stopped
+    networks:
+      - eronas-network
 
 volumes:
   backend_storage:
   backend_db:
+
+networks:
+  eronas-network:
+    driver: bridge

@@ -13,6 +13,7 @@ Route::prefix('v1')
     ->middleware(['web', 'throttle:api'])
     ->group(function (): void {
         Route::post('/auth/login', [AuthController::class, 'login'])->middleware('guest');
+        Route::post('/auth/register', [AuthController::class, 'register'])->middleware('guest');
 
         Route::middleware('auth')->group(function (): void {
             Route::get('/auth/me', [AuthController::class, 'me']);

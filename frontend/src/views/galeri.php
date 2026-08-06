@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!function_exists('e')) {
     function e($value) {
@@ -10,7 +12,7 @@ if (!function_exists('e')) {
 $restaurantName = 'Kafiber';
 $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
 
-include 'header.php';
+include LAYOUTS_PATH . '/header.php';
 ?>
 
 <section class="mx-auto max-w-7xl px-6 py-12 lg:px-10">
@@ -144,4 +146,4 @@ function filterGaleri(kategori) {
 }
 </script>
 
-<?php include 'footer.php'; ?>
+<?php include LAYOUTS_PATH . '/footer.php'; ?>

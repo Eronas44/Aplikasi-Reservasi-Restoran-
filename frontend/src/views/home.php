@@ -25,7 +25,7 @@ $featuredCategories = [
 
 $featuredMenu = [];
 
-include 'header.php';
+include LAYOUTS_PATH . '/header.php';
 ?>
 
 <style>
@@ -51,11 +51,11 @@ include 'header.php';
       <!-- Tombol Hero Dinamis Berdasarkan Status Login -->
       <div class="mt-4 flex flex-wrap gap-4">
         <?php if ($isLoggedIn): ?>
-          <a href="pesan.php" class="btn-primary">Mulai Pesan Sekarang</a>
-          <a href="dashboard.php" class="btn-secondary">Dashboard Saya</a>
+          <a href="<?= route('dashboard') ?>" class="btn-primary">Mulai Pesan Sekarang</a>
+          <a href="<?= route('dashboard') ?>" class="btn-secondary">Dashboard Saya</a>
         <?php else: ?>
-          <a href="#register" class="btn-primary">Buat Akun</a>
-          <a href="#login" class="btn-secondary">Masuk ke Sistem</a>
+          <a href="<?= route('register') ?>" class="btn-primary">Buat Akun</a>
+          <a href="<?= route('login') ?>" class="btn-secondary">Masuk ke Sistem</a>
         <?php endif; ?>
       </div>
     </div>
@@ -218,7 +218,7 @@ include 'header.php';
       <span class="eyebrow">Kategori Menu</span>
       <h2 class="mt-4 font-display text-3xl text-[#201913] md:text-4xl">Pilihan hidangan utama restoran</h2>
     </div>
-    <a href="<?= $isLoggedIn ? 'dashboard.php' : '#login' ?>" class="hidden text-sm font-semibold text-[#8a5d49] md:inline">Kelola menu dari dashboard</a>
+    <a href="<?= $isLoggedIn ? route('dashboard') : route('login') . '#login' ?>" class="hidden text-sm font-semibold text-[#8a5d49] md:inline">Kelola menu dari dashboard</a>
   </div>
 
   <div class="bg-[#efebe4]/80 border border-[#eadfd4] rounded-3xl p-8 flex flex-col md:flex-row justify-between gap-6 text-center md:text-left items-center md:items-stretch shadow-sm">
@@ -261,14 +261,14 @@ include 'header.php';
     </div>
     <div class="flex flex-wrap gap-4">
       <?php if ($isLoggedIn): ?>
-        <a href="pesan.php" class="btn-primary">Buat Pesanan</a>
-        <a href="dashboard.php" class="btn-secondary">Lihat Dashboard</a>
+        <a href="<?= route('dashboard') ?>" class="btn-primary">Buat Pesanan</a>
+        <a href="<?= route('dashboard') ?>" class="btn-secondary">Lihat Dashboard</a>
       <?php else: ?>
-        <a href="#register" class="btn-primary">Mulai Daftar</a>
-        <a href="#dashboard" class="btn-secondary">Lihat Dashboard</a>
+        <a href="<?= route('register') ?>" class="btn-primary">Mulai Daftar</a>
+        <a href="<?= route('dashboard') ?>" class="btn-secondary">Lihat Dashboard</a>
       <?php endif; ?>
     </div>
   </div>
 </section>
 
-<?php include 'footer.php'; ?>
+<?php include LAYOUTS_PATH . '/footer.php'; ?>
