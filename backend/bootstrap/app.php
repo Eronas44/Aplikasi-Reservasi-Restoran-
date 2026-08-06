@@ -16,6 +16,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => RoleMiddleware::class,
         ]);
+
+        // API murni: tanpa route web 'login'. Arahkan tamu langsung ke 401 JSON
+        // daripada mencoba redirect ke route 'login' yang tidak ada (500).
+        $middleware->redirectGuestsTo(fn () => response()->json(['message' => 'Unauthenticated.'], 401));
+
+        // Route API menggunakan middleware 'web' (untuk sesi cookie dari frontend
+        // proxy). Frontend memanggil API via cURL server-side tanpa token CSRF,
+        // sehingga nonaktifkan verifikasi CSRF khusus untuk prefix /api/*.
+        $middleware->validateCsrfTokens(except: ['api/*']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

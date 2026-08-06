@@ -1,11 +1,43 @@
 <?php
 // register.php — Kafiber Restoran (tampil sebagai popup di atas Home, dengan background blur)
-// Mengikuti pola yang sama seperti login.php. Proses backend (simpan ke DB) menyusul di file terpisah.
-session_start();
+// Proses register dikirim ke backend Laravel lewat proxy API (src/utils/api.php).
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $error_message = '';
 if (!empty($_GET['error'])) {
     $error_message = $_GET['error'];
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = trim($_POST['nama'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['telepon'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+    $konfirmasi = trim($_POST['konfirmasi_password'] ?? '');
+
+    if ($password !== $konfirmasi) {
+        $error_message = 'Password dan Konfirmasi Password tidak cocok.';
+    } else {
+        require_once dirname(__DIR__) . '/config/api.config.php';
+        require_once dirname(__DIR__) . '/utils/api.php';
+
+        $result = api_register([
+            'name' => $name,
+            'email' => $email,
+            'phone_number' => $phone,
+            'password' => $password,
+        ]);
+
+        if ($result['ok'] && isset($result['data']['data']) && is_array($result['data']['data'])) {
+            set_frontend_session_from_user($result['data']['data']);
+            header('Location: ' . route('dashboard'));
+            exit;
+        }
+
+        $error_message = api_error_message($result, 'Pendaftaran gagal. Silakan coba lagi.');
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -17,7 +49,7 @@ if (!empty($_GET['error'])) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="src/styles/style.css">
 <style>
     body { font-family: 'Inter', sans-serif; }
     .font-display { font-family: 'Fraunces', serif; }
@@ -103,7 +135,7 @@ if (!empty($_GET['error'])) {
     <div id="register-modal-card" class="relative w-full max-w-md bg-[#faf8f5] border border-[#eadfd4] rounded-3xl shadow-2xl px-8 py-7">
 
         <!-- Tombol close -> kembali ke Home -->
-        <a href="home.php" aria-label="Tutup"
+        <a href="<?= route('home') ?>" aria-label="Tutup"
            class="absolute top-5 right-5 w-9 h-9 rounded-full bg-[#f4ece1] hover:bg-[#eadfd4] flex items-center justify-center text-[#5e392e] transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -128,7 +160,7 @@ if (!empty($_GET['error'])) {
         <?php endif; ?>
 
         <!-- Form register (frontend saja, action diarahkan ke backend saat sudah dibuat) -->
-        <form id="registerForm" action="register.php" method="POST" class="space-y-3.5" novalidate>
+        <form id="registerForm" action="<?= route('register') ?>" method="POST" class="space-y-3.5" novalidate>
 
             <div>
                 <label for="nama" class="block text-xs font-bold uppercase tracking-wider text-[#8a5d49] mb-1.5">
@@ -214,7 +246,7 @@ if (!empty($_GET['error'])) {
 
         <p class="text-center text-xs text-[#66574b] mt-5">
             Sudah punya akun Kafiber?
-            <a href="login.php" class="font-bold text-[#8a5d49] hover:underline">Masuk di sini</a>
+            <a href="<?= route('login') ?>" class="font-bold text-[#8a5d49] hover:underline">Masuk di sini</a>
         </p>
     </div>
 </div>

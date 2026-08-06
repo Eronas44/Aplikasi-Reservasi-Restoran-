@@ -1,4 +1,4 @@
-<?php include 'header.php'; ?>
+<?php include LAYOUTS_PATH . '/header.php'; ?>
 
   <!-- STORY / ABOUT HERO -->
   <section style="max-width:1180px; margin:0 auto; padding:3rem 1.5rem 1.5rem;">
@@ -47,8 +47,8 @@
         <h3 class="font-display" style="font-size:1.5rem; margin:0 0 0.4rem;">Ingin merasakan langsung suasana kami?</h3>
         <p style="color:var(--muted); margin:0;">Reservasi meja Anda sekarang dan nikmati momen spesial bersama kami.</p>
       </div>
-      <a href="Home.php#reservasi" class="btn-primary">Reservasi Sekarang</a>
+      <a href="<?= route('home') ?>#reservasi" class="btn-primary">Reservasi Sekarang</a>
     </div>
   </section>
 
-<?php include 'footer.php'; ?>
+<?php include LAYOUTS_PATH . '/footer.php'; ?>

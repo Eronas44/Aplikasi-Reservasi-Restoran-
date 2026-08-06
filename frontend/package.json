@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "build:css": "tailwindcss -i ./input.css -o ./style.css",
-    "watch:css": "tailwindcss -i ./input.css -o ./style.css --watch"
+    "build:css": "tailwindcss -i ./src/styles/input.css -o ./src/styles/style.css",
+    "watch:css": "tailwindcss -i ./src/styles/input.css -o ./src/styles/style.css --watch"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.3.3",

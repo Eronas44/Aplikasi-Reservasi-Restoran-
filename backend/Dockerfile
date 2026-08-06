@@ -36,4 +36,4 @@ RUN chmod +x docker/entrypoint.sh \
 EXPOSE 8000
 
 ENTRYPOINT ["/var/www/html/docker/entrypoint.sh"]
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+CMD ["sh", "-c", "cd /var/www/html/public && exec php -S 0.0.0.0:8000 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php"]

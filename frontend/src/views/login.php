@@ -1,20 +1,30 @@
 <?php
 // login.php — Kafiber Restoran (tampil sebagai popup di atas Home, dengan background blur)
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $identifier = trim($_POST['identifier'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');
 
-    if (($identifier === 'admin@kafiber.com' || $identifier === '08123456789') && $password === 'password123') {
-        $_SESSION['user_logged_in'] = true;
-        $_SESSION['user_name'] = 'Admin Kafiber';
-        header('Location: home.php');
-        exit;
+    if ($email === '' || $password === '') {
+        $error_message = 'Email dan Kata Sandi wajib diisi.';
     } else {
-        $error_message = 'Email/Nomor Telepon atau Kata Sandi salah.';
+        require_once dirname(__DIR__) . '/config/api.config.php';
+        require_once dirname(__DIR__) . '/utils/api.php';
+
+        $result = api_login($email, $password);
+
+        if ($result['ok'] && isset($result['data']['data']) && is_array($result['data']['data'])) {
+            set_frontend_session_from_user($result['data']['data']);
+            header('Location: ' . route('dashboard'));
+            exit;
+        }
+
+        $error_message = api_error_message($result, 'Email atau Kata Sandi salah.');
     }
 }
 ?>
@@ -27,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="src/styles/style.css">
 <style>
     body { font-family: 'Inter', sans-serif; }
     .font-display { font-family: 'Fraunces', serif; }
@@ -112,8 +122,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div id="login-modal-card" class="relative w-full max-w-md bg-[#faf8f5] border border-[#eadfd4] rounded-3xl shadow-2xl px-8 py-10">
 
-        <!-- Tombol close -> kembali ke Home -->
-        <a href="home.php" aria-label="Tutup"
+        <!-- Tombol close -> kembali ke Home (via router) -->
+        <a href="<?= route('home') ?>" aria-label="Tutup"
            class="absolute top-5 right-5 w-9 h-9 rounded-full bg-[#f4ece1] hover:bg-[#eadfd4] flex items-center justify-center text-[#5e392e] transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -137,10 +147,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
 
-        <form action="login.php" method="POST" class="space-y-5">
+        <div class="mb-5 p-3 rounded-xl bg-[#efe0d5] border border-[#decbbd] text-[#5e392e] text-xs text-center">
+            Demo: <strong>admin@reservasi.local</strong> / kata sandi <strong>password</strong>
+        </div>
+
+        <form action="<?= route('login') ?>" method="POST" class="space-y-5">
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-[#8a5d49] mb-2">Email / Nomor Telepon</label>
-                <input type="text" name="identifier" required placeholder="nama@email.com"
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#8a5d49] mb-2">Email</label>
+                <input type="email" name="email" required placeholder="nama@email.com"
                        class="w-full px-4 py-3 rounded-2xl border border-[#eadfd4] bg-white text-sm text-[#201913] outline-none focus:border-[#8a5d49] transition">
             </div>
 
@@ -157,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <p class="text-center text-xs text-[#66574b] mt-7">
-            Belum punya akun Kafiber? <a href="register.php" class="font-bold text-[#8a5d49] hover:underline">Buat Akun</a>
+            Belum punya akun Kafiber? <a href="<?= route('register') ?>" class="font-bold text-[#8a5d49] hover:underline">Buat Akun</a>
         </p>
     </div>
 </div>
