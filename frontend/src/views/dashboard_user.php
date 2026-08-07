@@ -47,8 +47,8 @@ include LAYOUTS_PATH . '/header.php';
         
         <!-- Restoran A -->
         <a href="<?= route('detail_restoran', ['resto' => 'A']) ?>" class="bg-white/80 border border-[#eadfd4] rounded-3xl p-5 shadow-sm flex flex-col hover:border-[#8a5d49] transition group">
-          <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-[#eadfd4] relative carousel-container" data-images='["img/Resto/RestoA.jpg", "img/Resto/ViewRestoA.jpg", "img/slide_makanan/foto3.jpg"]'>
-            <img src="img/Resto/RestoA.jpg" alt="Restoran A" class="w-full h-full object-cover transition-opacity duration-700 carousel-img">
+          <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-[#eadfd4] relative carousel-container" data-images='["img/Resto/KidsCornerRestoA.jpg", "img/Resto/RestoA.jpg", "img/Resto/ViewRestoA.jpg", "img/Resto/LiveCookingRestoA.jpg"]'>
+            <img src="img/Resto/KidsCornerRestoA.jpg" alt="Restoran A" class="w-full h-full object-cover transition-opacity duration-700 carousel-img">
           </div>
           <div class="flex items-center justify-between mt-auto">
             <h3 class="font-display text-lg font-bold text-[#201913] group-hover:text-[#8a5d49] transition">Restoran A</h3>
@@ -58,8 +58,8 @@ include LAYOUTS_PATH . '/header.php';
 
         <!-- Restoran B -->
         <a href="<?= route('detail_restoran', ['resto' => 'B']) ?>" class="bg-white/80 border border-[#eadfd4] rounded-3xl p-5 shadow-sm flex flex-col hover:border-[#8a5d49] transition group">
-          <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-[#eadfd4] relative carousel-container" data-images='["img/slide_makanan/makanan 2.jpg", "img/slide_makanan/makanan 3.jpg"]'>
-            <img src="img/slide_makanan/makanan 2.jpg" alt="Restoran B" class="w-full h-full object-cover transition-opacity duration-700 carousel-img">
+          <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-[#eadfd4] relative carousel-container" data-images='["img/Resto/ViewRestoB.jpg", "img/Resto/DjRestoB.jpg", "img/Resto/GamingRestoB.jpg", "img/Resto/BarRestoB.png"]'>
+            <img src="img/Resto/ViewRestoB.jpg" alt="Restoran B" class="w-full h-full object-cover transition-opacity duration-700 carousel-img">
           </div>
           <div class="flex items-center justify-between mt-auto">
             <h3 class="font-display text-lg font-bold text-[#201913] group-hover:text-[#8a5d49] transition">Restoran B</h3>
@@ -69,8 +69,8 @@ include LAYOUTS_PATH . '/header.php';
 
         <!-- Restoran C -->
         <a href="<?= route('detail_restoran', ['resto' => 'C']) ?>" class="bg-white/80 border border-[#eadfd4] rounded-3xl p-5 shadow-sm flex flex-col hover:border-[#8a5d49] transition group">
-          <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-[#eadfd4] relative carousel-container" data-images='["img/slide_makanan/Makanan 1.jpg", "img/slide_makanan/makanan 3.jpg"]'>
-            <img src="img/slide_makanan/Makanan 1.jpg" alt="Restoran C" class="w-full h-full object-cover transition-opacity duration-700 carousel-img">
+          <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-[#eadfd4] relative carousel-container" data-images='["img/Resto/ViewRestoC.jpg", "img/Resto/birdparkRestoC.jpg", "img/Resto/dapurTerbukaRestoC.jpg", "img/Resto/gamelanrestoC.jpg"]'>
+            <img src="img/Resto/ViewRestoC.jpg" alt="Restoran C" class="w-full h-full object-cover transition-opacity duration-700 carousel-img">
           </div>
           <div class="flex items-center justify-between mt-auto">
             <h3 class="font-display text-lg font-bold text-[#201913] group-hover:text-[#8a5d49] transition">Restoran C</h3>
@@ -80,8 +80,8 @@ include LAYOUTS_PATH . '/header.php';
 
         <!-- Restoran D -->
         <a href="<?= route('detail_restoran', ['resto' => 'D']) ?>" class="bg-white/80 border border-[#eadfd4] rounded-3xl p-5 shadow-sm flex flex-col hover:border-[#8a5d49] transition group">
-          <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-[#eadfd4] relative carousel-container" data-images='["img/slide_makanan/makanan 4.jpg", "img/slide_makanan/makanan 5.jpg"]'>
-            <img src="img/slide_makanan/makanan 4.jpg" alt="Restoran D" class="w-full h-full object-cover transition-opacity duration-700 carousel-img">
+          <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-[#eadfd4] relative carousel-container" data-images='["img/Resto/KapsulD.jpg", "img/Resto/tapayakirestoD.jpg", "img/Resto/ViewRestoD.jpg"]'>
+            <img src="img/Resto/artspacerestoD.jpg" alt="Restoran D" class="w-full h-full object-cover transition-opacity duration-700 carousel-img">
           </div>
           <div class="flex items-center justify-between mt-auto">
             <h3 class="font-display text-lg font-bold text-[#201913] group-hover:text-[#8a5d49] transition">Restoran D</h3>

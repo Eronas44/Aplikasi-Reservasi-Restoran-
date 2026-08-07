@@ -6,13 +6,18 @@ if (session_status() === PHP_SESSION_NONE) {
 // Ambil parameter restoran yang diklik, default ke 'A'
 $restoId = isset($_GET['resto']) ? $_GET['resto'] : 'A';
 
-// Data dummy restoran berdasarkan pilihan
+// Data restoran dengan daftar fasilitas yang sudah disesuaikan secara lengkap
 $restaurants = [
     'A' => [
         'name' => 'Restoran A',
         'rating' => '4.9',
         'hours' => '10.00 - 22.00 WIB',
-        'images' => ['img/Resto/RestoA.jpg', 'img/Resto/ViewRestoA.jpg', 'img/slide_makanan/foto3.jpg'],
+        'images' => [
+            'img/Resto/KidsCornerRestoA.jpg', 
+            'img/Resto/RestoA.jpg', 
+            'img/Resto/ViewRestoA.jpg', 
+            'img/Resto/LiveCookingRestoA.jpg'
+        ],
         'facilities' => [
             'Live Acoustic Music: Hiburan musik akustik setiap akhir pekan.',
             'Ruang VIP (Private Room): Ruangan ber-AC eksklusif untuk acara keluarga atau rapat.',
@@ -28,33 +33,63 @@ $restaurants = [
         'name' => 'Restoran B',
         'rating' => '4.8',
         'hours' => '10.00 - 22.00 WIB',
-        'images' => ['img/slide_makanan/makanan 2.jpg', 'img/slide_makanan/makanan 3.jpg'],
+        'images' => [
+            'img/Resto/ViewRestoB.jpg', 
+            'img/Resto/DjRestoB.jpg', 
+            'img/Resto/GamingRestoB.jpg', 
+            'img/Resto/BarRestoB.png'
+        ],
         'facilities' => [
-            'Live Acoustic Music: Hiburan musik akustik setiap akhir pekan.',
-            'Wi-Fi Berkecepatan Tinggi: Akses internet gratis untuk pengunjung.',
-            'Mushola: Tempat ibadah yang bersih dan nyaman.',
-            'Area Parkir Luas: Tersedia lahan parkir yang aman.'
+            'Rooftop Sky Lounge: Area tempat duduk di lantai atas dengan pemandangan kota terbuka.',
+            'Live DJ Performance: Penampilan musik DJ langsung setiap akhir pekan malam.',
+            'Family Booth Seating: Sofa besar khusus keluarga yang nyaman dan privat.',
+            'Playstation & Gaming Corner: Sudut hiburan konsol game untuk anak-anak dan remaja.',
+            'High-Speed Charging Station: Fasilitas pengisian daya gratis di setiap meja.',
+            'Mushola & Clean Restroom: Fasilitas ibadah dan toilet yang bersih serta terawat.',
+            'Valet Parking Service: Layanan parkir valet praktis untuk kendaraan pengunjung.',
+            'Open Bar & Cocktail Counter: Konter minuman terbuka dengan barista profesional.'
         ]
     ],
     'C' => [
         'name' => 'Restoran C',
         'rating' => '4.7',
         'hours' => '10.00 - 22.00 WIB',
-        'images' => ['img/slide_makanan/Makanan 1.jpg', 'img/slide_makanan/makanan 3.jpg'],
+        'images' => [
+            'img/Resto/ViewRestoC.jpg', 
+            'img/Resto/birdparkRestoC.jpg', 
+            'img/Resto/dapurTerbukaRestoC.jpg', 
+            'img/Resto/gamelanrestoC.jpg'
+        ],
         'facilities' => [
-            'Kids Corner: Area bermain anak yang aman.',
-            'Wi-Fi Berkecepatan Tinggi: Akses internet gratis untuk pengunjung.',
-            'Mushola: Tempat ibadah yang bersih dan nyaman.'
+            'Garden Dining Area: Area makan outdoor dengan konsep taman hijau yang sejuk.',
+            'Traditional Gamelan Music: Alunan musik tradisional gamelan live setiap malam Minggu.',
+            'Meeting Hall (Ballroom): Ruangan serbaguna besar untuk acara formal, seminar, atau pernikahan.',
+            'Mini Zoo / Bird Park: Area taman dengan satwa jinak ramah anak.',
+            'Free Wi-Fi Access: Koneksi internet nirkabel gratis di seluruh area restoran.',
+            'Mushola Representatif: Tempat sholat yang luas dan nyaman untuk jamaah.',
+            'Spacious Car Park: Lahan parkir luas yang muat untuk banyak bus dan mobil.',
+            'Traditional Kitchen Showcase: Pameran dapur terbuka bergaya tradisional tempo dulu.'
         ]
     ],
     'D' => [
         'name' => 'Restoran D',
         'rating' => '4.9',
         'hours' => '10.00 - 22.00 WIB',
-        'images' => ['img/slide_makanan/makanan 4.jpg', 'img/slide_makanan/makanan 5.jpg'],
+        'images' => [
+            'img/Resto/artspacerestoD.jpg',
+            'img/Resto/KapsulD.jpg', 
+            'img/Resto/tapayakirestoD.jpg', 
+            'img/Resto/ViewRestoD.jpg'
+        ],
         'facilities' => [
-            'Ruang VIP (Private Room): Ruangan ber-AC eksklusif.',
-            'Live Cooking Counter: Atraksi langsung dari koki.'
+            'Waterfront Deck: Meja makan tepat di tepi kolam buatan atau danau.',
+            'Jazz & Blues Night: Hiburan musik jazz lembut setiap hari Jumat dan Sabtu.',
+            'Romantic Couple Pods: Gazebo privat berbentuk kapsul khusus untuk pasangan.',
+            'Creative Art Space: Sudut melukis dan kerajinan tangan interaktif untuk anak-anak.',
+            'High-Speed Wi-Fi: Jaringan internet cepat tanpa batasan kuota.',
+            'Mushola & Ablution Area: Tempat wudhu dan mushola yang bersih terpisah.',
+            'Secure Parking Area: Area parkir aman dengan penjagaan petugas khusus.',
+            'Teppanyaki Grill Station: Atraksi memasak langsung di atas meja grill panas oleh koki.'
         ]
     ]
 ];

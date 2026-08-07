@@ -3,23 +3,6 @@
  * ==========================================
  * ROUTER TERPUSAT - APLIKASI RESERVASI RESTORAN
  * ==========================================
- * File ini adalah gerbang utama (entry point) aplikasi
- * Semua request diproses melalui file ini
- *
- * Cara Penggunaan:
- * - index.php                  (Homepage default/dashboard)
- * - index.php?page=login       (Halaman login)
- * - index.php?page=register    (Halaman register)
- * - index.php?page=dashboard   (Dashboard user)
- * - index.php?page=menu        (Menu restoran - data dari backend)
- * - index.php?page=galeri      (Galeri restoran)
- * - index.php?page=story       (Story about restoran)
- * - index.php?page=reservations      (Daftar reservasi user)
- * - index.php?page=reservation-form  (Form buat reservasi)
- * - index.php?page=logout      (Keluar sistem)
- *
- * Daftar route juga didefinisikan di src/config/routes.js sebagai
- * manifest frontend (sumber kebenaran). Pastikan keduanya sinkron.
  */
 
 // ==========================================
@@ -45,7 +28,7 @@ if (!function_exists('e')) {
     }
 }
 
-// Helper function untuk generate URL (mengikuti manifest di src/config/routes.js)
+// Helper function untuk generate URL
 function route($page = '', $params = []) {
     $query = [];
 
@@ -78,10 +61,6 @@ function isActive($page) {
 // AMBIL PARAMETER PAGE
 // ==========================================
 
-/**
- * Sanitize input - mencegah directory traversal attacks
- * Hanya allow alphanumeric, underscore, dan hyphen
- */
 function sanitize($input) {
     return preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $input);
 }
@@ -90,24 +69,26 @@ function sanitize($input) {
 $page = isset($_GET['page']) ? sanitize($_GET['page']) : 'home';
 
 // ==========================================
-// MAPPING ROUTES KE FILES
+// MAPPING ROUTES KE FILES (DISINKRONKAN)
 // ==========================================
 
 $routes = [
-    'home'             => 'home.php',
-    'login'            => 'login.php',
-    'register'         => 'register.php',
-    'dashboard'        => 'dashboard_user.php',
-    'galeri'           => 'galeri.php',
-    'menu'             => 'menu.php',
-    'story'            => 'story.php',
-    'reservations'     => 'reservations.php',
-    'reservation-form' => 'reservation_form.php',
-    'detail_restoran'  => 'detail_restoran.php',
+    'home'               => 'home.php',
+    'login'              => 'login.php',
+    'register'           => 'register.php',
+    'dashboard'          => 'dashboard_user.php',
+    'galeri'             => 'galeri.php',
+    'menu'               => 'menu.php',
+    'story'              => 'story.php',
+    'reservasi'          => 'reservasi.php', // <-- DITAMBAHKAN AGAR TIDAK 404
+    'reservations'       => 'reservasi.php',
+    'reservation-form'   => 'reservasi.php', 
+    'proses_reservasi'   => 'proses_reservasi.php', 
+    'detail_restoran'    => 'detail_restoran.php',
 ];
 
-// Proteksi akses (sinkron dengan src/config/routes.js)
-$authRequiredPages = ['dashboard', 'galeri', 'reservations', 'reservation-form', 'detail_restoran'];
+// Proteksi akses (ditambahkan 'reservasi' agar aman)
+$authRequiredPages = ['dashboard', 'galeri', 'reservasi', 'reservations', 'reservation-form', 'detail_restoran'];
 $guestOnlyPages    = ['login', 'register'];
 
 // ==========================================
@@ -115,9 +96,16 @@ $guestOnlyPages    = ['login', 'register'];
 // ==========================================
 
 if ($page === 'logout') {
-    require_once __DIR__ . '/src/config/api.config.php';
-    require_once __DIR__ . '/src/utils/api.php';
-    frontend_logout();
+    if (file_exists(__DIR__ . '/src/config/api.config.php')) {
+        require_once __DIR__ . '/src/config/api.config.php';
+    }
+    if (file_exists(__DIR__ . '/src/utils/api.php')) {
+        require_once __DIR__ . '/src/utils/api.php';
+    }
+    if (function_exists('frontend_logout')) {
+        frontend_logout();
+    }
+    session_destroy();
     header('Location: ' . route('login'));
     exit;
 }
@@ -145,17 +133,14 @@ if (array_key_exists($page, $routes)) {
 // ==========================================
 
 if (array_key_exists($page, $routes)) {
-    // File ada di mapping
     $file = VIEWS_PATH . '/' . $routes[$page];
 
     if (file_exists($file)) {
         include $file;
     } else {
-        // File tidak ditemukan (error server)
         show_404("File halaman tidak ditemukan: {$file}");
     }
 } else {
-    // Route tidak ditemukan (404)
     show_404("Halaman '{$page}' tidak ditemukan");
 }
 
@@ -174,25 +159,24 @@ function show_404($message = '', $page = null) {
     if ($page === null) {
         $page = isset($_GET['page']) ? sanitize($_GET['page']) : '';
     }
-    include LAYOUTS_PATH . '/header.php';
+    
+    $layout_header = LAYOUTS_PATH . '/header.php';
+    $layout_footer = LAYOUTS_PATH . '/footer.php';
+
+    if (file_exists($layout_header)) include $layout_header;
     ?>
 
     <div class="min-h-screen bg-[#f4ece1] flex items-center justify-center px-6">
         <div class="text-center max-w-md">
-            <!-- 404 Error Image/Icon -->
             <div class="mb-8">
                 <svg class="w-24 h-24 mx-auto text-[#8a5d49]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
 
-            <!-- Error Code -->
             <h1 class="font-display text-6xl font-bold text-[#201913] mb-4">404</h1>
-
-            <!-- Error Title -->
             <h2 class="font-display text-2xl font-bold text-[#201913] mb-2">Halaman Tidak Ditemukan</h2>
 
-            <!-- Error Message -->
             <p class="text-[#66574b] mb-8">
                 Maaf, halaman yang Anda cari tidak tersedia.
                 <?php if (!empty($message)): ?>
@@ -200,7 +184,6 @@ function show_404($message = '', $page = null) {
                 <?php endif; ?>
             </p>
 
-            <!-- Action Buttons -->
             <div class="flex flex-wrap gap-4 justify-center">
                 <a href="<?= route('home') ?>" class="inline-block bg-[#8a5d49] hover:bg-[#734d3d] text-white font-bold py-3 px-6 rounded-full transition">
                     ← Kembali ke Beranda
@@ -209,21 +192,10 @@ function show_404($message = '', $page = null) {
                     Dashboard →
                 </a>
             </div>
-
-            <!-- Debug Info (hanya di development) -->
-            <?php if ((isset($_ENV['APP_DEBUG']) && $_ENV['APP_DEBUG'] === true) || false): ?>
-                <div class="mt-8 text-left bg-white border border-[#eadfd4] rounded-lg p-4">
-                    <p class="text-xs font-mono text-[#66574b]">
-                        <strong>Debug Info:</strong><br>
-                        Page: <?= e($page) ?><br>
-                        Available Routes: home, login, register, dashboard, galeri, menu, story, reservations, reservation-form, logout
-                    </p>
-                </div>
-            <?php endif; ?>
         </div>
     </div>
 
     <?php
-    include LAYOUTS_PATH . '/footer.php';
+    if (file_exists($layout_footer)) include $layout_footer;
     exit;
 }

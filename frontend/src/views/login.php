@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($result['ok'] && isset($result['data']['data']) && is_array($result['data']['data'])) {
             set_frontend_session_from_user($result['data']['data']);
-            header('Location: ' . route('dashboard'));
+            header('Location: ' . route('home')); // <--- SUDAH DIGANTI KE HOME
             exit;
         }
 
