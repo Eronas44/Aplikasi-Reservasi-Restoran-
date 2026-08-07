@@ -103,10 +103,11 @@ $routes = [
     'story'            => 'story.php',
     'reservations'     => 'reservations.php',
     'reservation-form' => 'reservation_form.php',
+    'detail_restoran'  => 'detail_restoran.php',
 ];
 
 // Proteksi akses (sinkron dengan src/config/routes.js)
-$authRequiredPages = ['dashboard', 'galeri', 'reservations', 'reservation-form'];
+$authRequiredPages = ['dashboard', 'galeri', 'reservations', 'reservation-form', 'detail_restoran'];
 $guestOnlyPages    = ['login', 'register'];
 
 // ==========================================

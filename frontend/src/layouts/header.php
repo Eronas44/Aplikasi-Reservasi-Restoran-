@@ -8,7 +8,15 @@ $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] 
 $userName = $_SESSION['user_name'] ?? 'Akun Saya';
 $currentPage = isset($_GET['page']) ? sanitize($_GET['page']) : 'home';
 
-// Helper function untuk generate route URL (jika belum didefinisikan di index.php)
+// Helper function untuk cek halaman aktif
+if (!function_exists('isActive')) {
+    function isActive($pageName) {
+        global $currentPage;
+        return $currentPage === $pageName ? 'active-nav' : '';
+    }
+}
+
+// Helper function untuk generate route URL
 if (!function_exists('route')) {
     function route($page = '', $params = []) {
         $query = [];
@@ -56,19 +64,32 @@ if (!function_exists('route')) {
       <!-- Menu Navigasi -->
       <nav style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
         <a href="<?= route('story') ?>" class="<?= isActive('story') ?>" style="display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.1); padding:0.55rem 1.1rem; font-size:0.92rem; font-weight:600; color:#fff; text-decoration:none; transition:background 180ms ease;">Story/About</a>
-        <a href="<?= route('menu') ?>" class="<?= isActive('menu') ?>" style="display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.1); padding:0.55rem 1.1rem; font-size:0.92rem; font-weight:600; color:#fff; text-decoration:none; transition:background 180ms ease;">Menu Kuliner</a>
+        <a href="<?= route('home') ?>#menu-kuliner" class="<?= isActive('menu') ?>" style="display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.1); padding:0.55rem 1.1rem; font-size:0.92rem; font-weight:600; color:#fff; text-decoration:none; transition:background 180ms ease;">Menu Kuliner</a>
 
-        <!-- Menu Galeri dengan proteksi login -->
+        <!-- Menu Galeri -->
         <a href="<?= $isLoggedIn ? route('galeri') : route('login') ?>" onclick="<?= $isLoggedIn ? '' : "alert('Silakan masuk terlebih dahulu untuk melihat Galeri / Suasana.');" ?>" class="<?= isActive('galeri') ?>" style="display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.1); padding:0.55rem 1.1rem; font-size:0.92rem; font-weight:600; color:#fff; text-decoration:none; transition:background 180ms ease;">Galeri / Suasana</a>
       </nav>
 
-      <!-- Tombol Masuk / Akun (Dinamis berdasarkan Status Login) -->
+      <!-- Tombol Kanan Atas -->
       <?php if ($isLoggedIn): ?>
-        <div style="display:flex; align-items:center; gap:0.6rem;">
-          <a href="<?= route('dashboard') ?>" style="display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; background:#fff; padding:0.7rem 1.4rem; font-size:0.95rem; font-weight:700; color:#5e392e; text-decoration:none; box-shadow:0 4px 16px rgba(0,0,0,0.18); transition:transform 180ms ease, box-shadow 180ms ease;">
-            <?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?>
+        <div style="display:flex; align-items:center; gap:0.8rem;">
+          <!-- Tombol Pesan diarahkan ke rute 'reservasi' agar tidak 404 -->
+          <a href="<?= route('reservasi') ?>" style="display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; background:#fff; padding:0.7rem 1.4rem; font-size:0.95rem; font-weight:700; color:#5e392e; text-decoration:none; box-shadow:0 4px 16px rgba(0,0,0,0.18); transition:transform 180ms ease, box-shadow 180ms ease;">
+            Pesan
           </a>
-          <a href="<?= route('logout') ?>" style="display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; border:1px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.12); padding:0.7rem 1.1rem; font-size:0.9rem; font-weight:600; color:#fff; text-decoration:none; transition:background 180ms ease;">Keluar</a>
+          
+          <!-- Tampilan Profil -->
+          <div style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.4rem 0.6rem; font-size:0.92rem; font-weight:600; color:#fff; cursor:default;">
+            <svg style="width:1.25rem; height:1.25rem; color:rgba(255,255,255,0.85);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span><?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?></span>
+          </div>
+
+          <!-- Tombol Keluar -->
+          <a href="<?= route('logout') ?>" style="display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; border:1px solid rgba(255,255,255,0.35); background:rgba(255,255,255,0.05); padding:0.7rem 1rem; font-size:0.85rem; font-weight:600; color:#fff; text-decoration:none; transition:background 180ms ease;">
+            Keluar
+          </a>
         </div>
       <?php else: ?>
         <a href="<?= route('login') ?>" style="display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; background:#fff; padding:0.7rem 1.4rem; font-size:0.95rem; font-weight:700; color:#5e392e; text-decoration:none; box-shadow:0 4px 16px rgba(0,0,0,0.18); transition:transform 180ms ease, box-shadow 180ms ease;">

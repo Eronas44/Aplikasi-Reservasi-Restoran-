@@ -19,6 +19,7 @@ export const frontendRoutes = [
 
   // ---------- Wajib login ----------
   { path: '/dashboard', name: 'dashboard', requiresAuth: true, roles: ['customer', 'staff', 'admin'] },
+  { path: '/detail-restoran', name: 'detail_restoran', requiresAuth: true, roles: ['customer', 'staff', 'admin'] },
   { path: '/reservations', name: 'reservations', requiresAuth: true, roles: ['customer', 'staff', 'admin'] },
   { path: '/reservation-form', name: 'reservation-form', requiresAuth: true, roles: ['customer', 'staff', 'admin'] },
   { path: '/logout', name: 'logout', requiresAuth: true, roles: ['customer', 'staff', 'admin'] },

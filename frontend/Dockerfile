@@ -42,5 +42,9 @@ EXPOSE 8000
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+# Tambahkan 2 baris ini di Dockerfile frontend paling bawah:
+RUN apk add --no-cache dos2unix
+RUN dos2unix /entrypoint.sh && chmod +x /entrypoint.sh
+
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

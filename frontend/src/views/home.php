@@ -1,5 +1,8 @@
 <?php
-session_start(); // Memulai sesi untuk mengecek status login pengguna
+// home.php — Halaman Utama (Landing Page)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 if (!function_exists('e')) {
     function e($value) {
@@ -13,7 +16,6 @@ $restaurantAddress = 'Jl. Soekarno Hatta No.113, Lampung, Indonesia';
 $openTime = '10:00';
 $closeTime = '22:00';
 
-// Cek status login pengguna (sesuaikan nama variabel session dengan sistem login Anda)
 $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
 
 $featuredCategories = [
@@ -47,11 +49,11 @@ include LAYOUTS_PATH . '/header.php';
       <p class="mt-6 max-w-2xl text-lg leading-8 text-[#4f4338]">
         <?= e($restaurantName) ?> Dari meja reservasi hingga pesanan siap saji, menyatukan alur kerja restoran dalam satu genggaman. Tampil berkelas, layani lebih cepat.
       </p>
-      
-      <!-- Tombol Hero Dinamis Berdasarkan Status Login -->
+     
+      <!-- Tombol Hero Dinamis -->
       <div class="mt-4 flex flex-wrap gap-4">
         <?php if ($isLoggedIn): ?>
-          <a href="<?= route('dashboard') ?>" class="btn-primary">Mulai Pesan Sekarang</a>
+          <a href="<?= route('reservasi') ?>" class="btn-primary">Mulai Pesan Sekarang</a>
           <a href="<?= route('dashboard') ?>" class="btn-secondary">Dashboard Saya</a>
         <?php else: ?>
           <a href="<?= route('register') ?>" class="btn-primary">Buat Akun</a>
@@ -66,7 +68,6 @@ include LAYOUTS_PATH . '/header.php';
         <div class="rounded-[2rem] border border-white/60 bg-white/90 p-4 shadow-2xl backdrop-blur relative overflow-hidden h-[360px] md:h-[420px] flex items-center justify-center group">
           <!-- Carousel Slides Container -->
           <div class="carousel-container relative w-full h-full rounded-2xl overflow-hidden">
-            <!-- Slides -->
             <div class="carousel-slide absolute inset-0 opacity-100 transition-opacity duration-1000 ease-in-out">
               <img src="img/slide_makanan/Makanan 1.jpg" alt="Makanan 1" class="w-full h-full object-cover">
             </div>
@@ -83,12 +84,12 @@ include LAYOUTS_PATH . '/header.php';
               <img src="img/slide_makanan/makanan 5.jpg" alt="Makanan 5" class="w-full h-full object-cover">
             </div>
           </div>
-          
+         
           <!-- Navigation Buttons -->
-          <button onclick="prevSlide()" class="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-stone-900 border border-stone-200/50 rounded-full flex items-center justify-center shadow-md transition opacity-0 group-hover:opacity-100 focus:outline-none z-10">
+          <button onclick="prevSlide()" class="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/85 hover:bg-white text-stone-900 border border-stone-200/50 rounded-full flex items-center justify-center shadow-md transition opacity-0 group-hover:opacity-100 focus:outline-none z-10">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
           </button>
-          <button onclick="nextSlide()" class="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-stone-900 border border-stone-200/50 rounded-full flex items-center justify-center shadow-md transition opacity-0 group-hover:opacity-100 focus:outline-none z-10">
+          <button onclick="nextSlide()" class="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/85 hover:bg-white text-stone-900 border border-stone-200/50 rounded-full flex items-center justify-center shadow-md transition opacity-0 group-hover:opacity-100 focus:outline-none z-10">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
           </button>
 
@@ -164,8 +165,6 @@ include LAYOUTS_PATH . '/header.php';
 
 <section id="fitur" class="mx-auto max-w-7xl px-6 py-4 lg:px-10">
   <div class="grid gap-6 md:grid-cols-3">
-    
-    <!-- Feature 1: Kapasitas -->
     <div class="feature-card flex flex-col items-center text-center p-8 bg-white/70 border border-[#eadfd4] rounded-3xl shadow-sm">
       <div class="w-20 h-20 bg-[#efe0d5] border border-[#decbbd] rounded-2xl flex items-center justify-center mb-5 shadow-sm">
         <svg viewBox="0 0 64 64" class="w-12 h-12 text-[#8a5d49]" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -182,7 +181,6 @@ include LAYOUTS_PATH . '/header.php';
       <p class="feature-text text-sm text-[#66574b] mt-3 leading-relaxed">Ruang utama & area privat untuk acara Anda.</p>
     </div>
 
-    <!-- Feature 2: Suasana -->
     <div class="feature-card flex flex-col items-center text-center p-8 bg-white/70 border border-[#eadfd4] rounded-3xl shadow-sm">
       <div class="w-20 h-20 bg-[#efe0d5] border border-[#decbbd] rounded-2xl flex items-center justify-center mb-5 shadow-sm">
         <svg viewBox="0 0 64 64" class="w-12 h-12 text-[#8a5d49]" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -195,7 +193,6 @@ include LAYOUTS_PATH . '/header.php';
       <p class="feature-text text-sm text-[#66574b] mt-3 leading-relaxed">Pilih meja sesuai suasana yang Anda inginkan.</p>
     </div>
 
-    <!-- Feature 3: Ulasan -->
     <div class="feature-card flex flex-col items-center text-center p-8 bg-white/70 border border-[#eadfd4] rounded-3xl shadow-sm">
       <div class="w-20 h-20 bg-[#efe0d5] border border-[#decbbd] rounded-2xl flex items-center justify-center mb-5 shadow-sm">
         <svg viewBox="0 0 64 64" class="w-12 h-12 text-[#8a5d49]" fill="currentColor" stroke="none">
@@ -208,11 +205,10 @@ include LAYOUTS_PATH . '/header.php';
       <h3 class="feature-title font-display text-xl font-bold mt-2 text-[#201913]">Rating 4.9 / 5</h3>
       <p class="feature-text text-sm text-[#66574b] mt-3 leading-relaxed">Dari lebih dari 800 ulasan tamu kami.</p>
     </div>
-
   </div>
 </section>
 
-<section id="menu" class="mx-auto max-w-7xl px-6 py-12 lg:px-10">
+<section id="menu-kuliner" class="mx-auto max-w-7xl px-6 py-12 lg:px-10">
   <div class="flex items-end justify-between gap-6 mb-8">
     <div>
       <span class="eyebrow">Kategori Menu</span>
@@ -228,28 +224,27 @@ include LAYOUTS_PATH . '/header.php';
       <p class="text-xs text-[#66574b] mt-1">(Asian & Western Cuisine)</p>
     </div>
     <div class="hidden md:block w-px bg-[#eadfd4]"></div>
-    
+   
     <div class="flex-1 flex flex-col justify-center py-2">
       <span class="text-xs uppercase tracking-[0.24em] text-[#8a5d49] font-bold">Kategori 2</span>
       <h3 class="font-display text-xl font-bold mt-1 text-[#201913]">Hidangan Pembuka</h3>
       <p class="text-xs text-[#66574b] mt-1">(Appetizer)</p>
     </div>
     <div class="hidden md:block w-px bg-[#eadfd4]"></div>
-    
+   
     <div class="flex-1 flex flex-col justify-center py-2">
       <span class="text-xs uppercase tracking-[0.24em] text-[#8a5d49] font-bold">Kategori 3</span>
       <h3 class="font-display text-xl font-bold mt-1 text-[#201913]">Makanan Penutup</h3>
       <p class="text-xs text-[#66574b] mt-1">(Dessert)</p>
     </div>
     <div class="hidden md:block w-px bg-[#eadfd4]"></div>
-    
+   
     <div class="flex-1 flex flex-col justify-center py-2">
       <span class="text-xs uppercase tracking-[0.24em] text-[#8a5d49] font-bold">Kategori 4</span>
       <h3 class="font-display text-xl font-bold mt-1 text-[#201913]">Minuman</h3>
       <p class="text-xs text-[#66574b] mt-1">(Beverages)</p>
     </div>
   </div>
-
 </section>
 
 <section class="mx-auto max-w-7xl px-6 pb-16 pt-4 lg:px-10">
@@ -261,11 +256,11 @@ include LAYOUTS_PATH . '/header.php';
     </div>
     <div class="flex flex-wrap gap-4">
       <?php if ($isLoggedIn): ?>
-        <a href="<?= route('dashboard') ?>" class="btn-primary">Buat Pesanan</a>
+        <a href="<?= route('reservasi') ?>" class="btn-primary">Buat Pesanan</a>
         <a href="<?= route('dashboard') ?>" class="btn-secondary">Lihat Dashboard</a>
       <?php else: ?>
         <a href="<?= route('register') ?>" class="btn-primary">Mulai Daftar</a>
-        <a href="<?= route('dashboard') ?>" class="btn-secondary">Lihat Dashboard</a>
+        <a href="<?= route('login') ?>" class="btn-secondary">Masuk ke Sistem</a>
       <?php endif; ?>
     </div>
   </div>
