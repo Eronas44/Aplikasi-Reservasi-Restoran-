@@ -1,0 +1,35 @@
+## Node
+#node_modules/
+#npm-debug.log
+#yarn-error.log
+#package-lock.json
+#yarn.lock
+#
+## IDE
+#.vscode/
+#.idea/
+#*.swp
+#*.swo
+#*~
+#.DS_Store
+#
+## Build
+#dist/
+#build/
+#.cache/
+#
+## Environment
+#.env
+#.env.local
+#.env.*.local
+#
+## OS
+#.DS_Store
+#Thumbs.db
+#
+## Compiled CSS
+#src/styles/style.css
+#
+## Temporary files
+#*.tmp
+#temp/

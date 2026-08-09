@@ -2,7 +2,7 @@ services:
   # ==================== FRONTEND ====================
   frontend:
     build:
-      context: ./frontend
+      context: ./frontend_v2
       dockerfile: Dockerfile
     container_name: eronas-frontend
     ports:
