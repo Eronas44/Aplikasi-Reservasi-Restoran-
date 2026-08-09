@@ -4,8 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Menu;
+use App\Models\OpeningHour;
+use App\Models\Policy;
 use App\Models\Reservation;
 use App\Models\ReservationItem;
+use App\Models\Restaurant;
 use App\Models\RestaurantTable;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -134,7 +137,56 @@ class RestaurantReservationSeeder extends Seeder
         ]);
 
         User::factory(10)->create(['role' => 'customer']);
-        RestaurantTable::factory(20)->create();
+
+        // Restoran (Resto A/B/C/D sesuai dashboard user)
+        $restos = [
+            ['Resto A - Cabang Utama', 'resto-a', 'Jl. Soekarno Hatta No.113, Lampung', '082965739824', 'resto.a@kafiber.id', 4.8],
+            ['Resto B - Cabang Boulevard', 'resto-b', 'Jl. Boulevard Selatan No.45, Lampung', '082965739825', 'resto.b@kafiber.id', 4.6],
+            ['Resto C - Cabang Central Park', 'resto-c', 'Jl. ZA Pagar Alam No.88, Bandar Lampung', '082965739826', 'resto.c@kafiber.id', 4.7],
+            ['Resto D - Cabang Marina', 'resto-d', 'Jl. Pangeran Antasari No.21, Lampung', '082965739827', 'resto.d@kafiber.id', 4.5],
+        ];
+
+        foreach ($restos as $i => [$name, $slug, $address, $phone, $email, $rating]) {
+            Restaurant::query()->create([
+                'name' => $name,
+                'slug' => $slug,
+                'address' => $address,
+                'phone' => $phone,
+                'email' => $email,
+                'rating' => $rating,
+                'image_url' => null,
+                'is_active' => true,
+            ]);
+
+            // Jam operasional default per hari (0=Minggu .. 6=Sabtu)
+            foreach (range(0, 6) as $day) {
+                $isWeekend = $day === 0 || $day === 6;
+                OpeningHour::query()->create([
+                    'restaurant_id' => $i + 1,
+                    'day_of_week' => $day,
+                    'open_time' => $isWeekend ? '09:00' : '10:00',
+                    'close_time' => $isWeekend ? '22:00' : '23:00',
+                    'is_closed' => false,
+                ]);
+            }
+
+            // Kebijakan deposit & refund default (FR-007, FR-014)
+            Policy::query()->create([
+                'restaurant_id' => $i + 1,
+                'deposit_percent' => 20,
+                'deposit_min_amount' => 50000,
+                'refund_full_hours' => 24,
+                'refund_partial_hours' => 6,
+                'refund_partial_percent' => 50,
+                'is_active' => true,
+            ]);
+        }
+
+        // Meja dikaitkan ke Resto A secara default (sisanya bisa diatur admin)
+        $restoATables = RestaurantTable::factory(20)->create();
+        $restoATables->each(function (RestaurantTable $table): void {
+            $table->update(['restaurant_id' => 1]);
+        });
 
         // Kategori & menu diambil dari MENU_RESTORAN_D.docx
         foreach ($this->menuData as $categoryName => $items) {

@@ -2,7 +2,21 @@
 // components/navbar.php — Navigation Bar Component
 $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
 $userName = $_SESSION['user_name'] ?? 'Akun Saya';
+$userRole = isset($_SESSION['role']) ? $_SESSION['role'] : 'customer';
 $currentPage = isset($_GET['page']) ? sanitize(basename($_GET['page'])) : 'home';
+
+// Dashboard utama sesuai role
+if ($isLoggedIn) {
+    if ($userRole === 'admin') {
+        $homeDashboard = route('dashboard_admin');
+    } elseif ($userRole === 'staff') {
+        $homeDashboard = route('dashboard_staff');
+    } else {
+        $homeDashboard = route('dashboard');
+    }
+} else {
+    $homeDashboard = route('dashboard');
+}
 ?>
 
 <!-- NAVBAR -->
@@ -36,8 +50,8 @@ $currentPage = isset($_GET['page']) ? sanitize(basename($_GET['page'])) : 'home'
       <?php if ($isLoggedIn): ?>
         
         <?php if ($currentPage === 'home'): ?>
-        <a href="<?= route('dashboard') ?>" style="display: inline-flex; align-items: center; justify-content: center; border-radius: 9999px; background: #fff; padding: 0.7rem 1.4rem; font-size: 0.95rem; font-weight: 700; color: #5e392e; text-decoration: none; box-shadow: 0 4px 16px rgba(0,0,0,0.18);">
-          Pesan
+        <a href="<?= $homeDashboard ?>" style="display: inline-flex; align-items: center; justify-content: center; border-radius: 9999px; background: #fff; padding: 0.7rem 1.4rem; font-size: 0.95rem; font-weight: 700; color: #5e392e; text-decoration: none; box-shadow: 0 4px 16px rgba(0,0,0,0.18);">
+          <?= $userRole === 'admin' ? 'Admin' : ($userRole === 'staff' ? 'Operasional' : 'Pesan') ?>
         </a>
         <?php endif; ?>
         

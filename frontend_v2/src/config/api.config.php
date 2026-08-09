@@ -43,3 +43,21 @@ if (!defined('API_TABLES')) {
 if (!defined('API_RESERVATIONS')) {
     define('API_RESERVATIONS', '/reservations');
 }
+if (!defined('API_RESTAURANTS')) {
+    define('API_RESTAURANTS', '/restaurants');
+}
+if (!defined('API_OPENING_HOURS')) {
+    define('API_OPENING_HOURS', '/opening-hours');
+}
+if (!defined('API_POLICIES')) {
+    define('API_POLICIES', '/policies');
+}
+if (!defined('API_PAYMENTS')) {
+    define('API_PAYMENTS', '/payments');
+}
+if (!defined('API_WAITING_LIST')) {
+    define('API_WAITING_LIST', '/waiting-list');
+}
+if (!defined('API_USERS')) {
+    define('API_USERS', '/users');
+}

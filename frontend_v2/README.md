@@ -149,15 +149,50 @@ Lihat **[FRONTEND_STRUCTURE.md](./FRONTEND_STRUCTURE.md)** untuk detail lengkap.
 
 ## 🛣️ Available Routes
 
+### Publik
 | Route | URL | File |
 |-------|-----|------|
-| Home | `index.php?page=home` | `src/views/home.php` |
-| Login | `index.php?page=login` | `src/views/login.php` |
-| Register | `index.php?page=register` | `src/views/register.php` |
-| Dashboard | `index.php?page=dashboard` | `src/views/dashboard_user.php` |
-| Gallery | `index.php?page=galeri` | `src/views/galeri.php` |
-| Menu | `index.php?page=menu` | `src/views/menu.php` |
-| Story | `index.php?page=story` | `src/views/story.php` |
+| Home | `index.php?page=home` | `pages/home.php` |
+| Login | `index.php?page=login` | `pages/login.php` |
+| Register | `index.php?page=register` | `pages/register.php` |
+| Gallery | `index.php?page=galeri` | `pages/galeri.php` |
+| Menu | `index.php?page=menu` | `pages/menu.php` |
+| Story | `index.php?page=story` | `pages/story.php` |
+| 404 | `(route tidak dikenal)` | `pages/404.php` |
+
+### Customer (wajib login)
+| Route | URL | File |
+|-------|-----|------|
+| Dashboard User | `index.php?page=dashboard` | `pages/dashboard_user.php` |
+| Detail Restoran | `index.php?page=detail_restoran&resto=A` | `pages/detail_restoran.php` |
+| Reservasi | `index.php?page=reservasi` | `pages/reservasi.php` |
+| Proses Reservasi | `index.php?page=proses_reservasi` | `pages/proses_reservasi.php` |
+| Pembayaran / Deposit | `index.php?page=pembayaran` | `pages/pembayaran.php` |
+| Sukses + Kode Booking + QR | `index.php?page=sukses_reservasi` | `pages/sukses_reservasi.php` |
+| Riwayat Reservasi | `index.php?page=riwayat_reservasi` | `pages/riwayat_reservasi.php` |
+
+### Staff / Resepsionis (role: staff/admin)
+| Route | URL | File |
+|-------|-----|------|
+| Dashboard Staf | `index.php?page=dashboard_staff` | `pages/dashboard_staff.php` |
+| Denah Meja Real-Time | `index.php?page=denah_meja` | `pages/denah_meja.php` |
+| Jadwal Hari Ini | `index.php?page=jadwal_hari_ini` | `pages/jadwal_hari_ini.php` |
+| Check-in Tamu | `index.php?page=checkin` | `pages/checkin.php` |
+| Walk-in / Waiting List | `index.php?page=walkin` | `pages/walkin.php` |
+
+### Admin (role: admin)
+| Route | URL | File |
+|-------|-----|------|
+| Dashboard Admin | `index.php?page=dashboard_admin` | `pages/dashboard_admin.php` |
+| Kelola Meja & Layout | `index.php?page=kelola_meja` | `pages/kelola_meja.php` |
+| Kelola Menu & Kategori | `index.php?page=kelola_menu` | `pages/kelola_menu.php` |
+| Kelola Reservasi | `index.php?page=kelola_reservasi` | `pages/kelola_reservasi.php` |
+| Jam Operasional | `index.php?page=jam_operasional` | `pages/jam_operasional.php` |
+| Deposit & Refund | `index.php?page=kebijakan` | `pages/kebijakan.php` |
+| Kelola Akun Staf | `index.php?page=kelola_staf` | `pages/kelola_staf.php` |
+| Laporan & Analitik | `index.php?page=laporan` | `pages/laporan.php` |
+
+> 📌 **Urutan halaman** (sitemap) tersedia di `flowchart.xml` — tab diagram **"Urutan Halaman Frontend_v2 (Sitemap)"**.
 
 Lihat **[ROUTING.md](./ROUTING.md)** untuk detail lengkap.
 

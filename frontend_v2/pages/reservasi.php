@@ -143,11 +143,16 @@ $data_reservasi = $has_reservation ? $_SESSION['current_reservation'] : null;
 
                     <!-- Tombol Aksi -->
                     <div class="flex flex-wrap items-center justify-between gap-4 pt-4">
-                        <a href="<?= route('reservasi', ['resto' => $selected_resto, 'action' => 'reset']) ?>" class="px-5 py-2.5 rounded-xl border border-[#8a5d49] text-[#8a5d49] hover:bg-[#8a5d49] hover:text-white text-xs font-bold transition">
-                            + Buat Reservasi Baru
-                        </a>
-                        <a href="<?= route('menu', ['resto' => $selected_resto]) ?>" class="bg-[#5e392e] hover:bg-[#4a2c24] text-white text-xs font-bold py-2.5 px-6 rounded-xl transition shadow-sm">
-                            Pilih Menu Makanan →
+                        <div class="flex flex-wrap items-center gap-3">
+                            <a href="<?= route('reservasi', ['resto' => $selected_resto, 'action' => 'reset']) ?>" class="px-5 py-2.5 rounded-xl border border-[#8a5d49] text-[#8a5d49] hover:bg-[#8a5d49] hover:text-white text-xs font-bold transition">
+                                + Buat Reservasi Baru
+                            </a>
+                            <a href="<?= route('menu', ['resto' => $selected_resto]) ?>" class="px-5 py-2.5 rounded-xl border border-[#eadfd4] text-stone-600 hover:bg-stone-50 text-xs font-bold transition">
+                                Pilih Menu Makanan →
+                            </a>
+                        </div>
+                        <a href="<?= route('pembayaran') ?>" class="bg-[#5e392e] hover:bg-[#4a2c24] text-white text-xs font-bold py-2.5 px-6 rounded-xl transition shadow-sm">
+                            Lanjut ke Pembayaran →
                         </a>
                     </div>
 

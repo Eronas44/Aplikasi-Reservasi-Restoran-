@@ -1,5 +1,5 @@
 <?php
-// pages/login.php — Kafiber Restoran Modal/Form Login
+// pages/login.php — Kafiber Restoran Modal/Form Login (style frontend lama / v1)
 $error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($result['ok'] && isset($result['data']['data']) && is_array($result['data']['data'])) {
                 set_frontend_session_from_user($result['data']['data']);
-                header('Location: ' . route('home'));
+                header('Location: ' . dashboard_route());
                 exit;
             }
 
@@ -37,23 +37,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<div class="min-h-[80vh] flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-white rounded-3xl p-8 md:p-10 shadow-2xl border border-[#eadfd4] relative">
+<style>
+    /* Animasi muncul modal */
+    @keyframes modalPop {
+        from { opacity: 0; transform: translateY(16px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    #login-modal-card {
+        animation: modalPop 0.25s ease-out;
+    }
+</style>
 
-        <a href="<?= route('home') ?>" class="absolute top-6 right-6 text-[#8a5d49] hover:text-[#5e392e] transition" title="Tutup / Kembali ke Beranda">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+<?php include __DIR__ . '/../components/auth-background.php'; ?>
+
+<!-- ============ OVERLAY GELAP ============ -->
+<div class="fixed inset-0 bg-[#201913]/55 z-40"></div>
+
+<!-- ============ MODAL LOGIN (POP-UP) ============ -->
+<div class="fixed inset-0 z-50 flex items-center justify-center px-4 py-10">
+
+    <div id="login-modal-card" class="relative w-full max-w-md bg-[#faf8f5] border border-[#eadfd4] rounded-3xl shadow-2xl px-8 py-10">
+
+        <!-- Tombol close -> kembali ke Home (via router) -->
+        <a href="<?= route('home') ?>" aria-label="Tutup"
+           class="absolute top-5 right-5 w-9 h-9 rounded-full bg-[#f4ece1] hover:bg-[#eadfd4] flex items-center justify-center text-[#5e392e] transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </a>
 
-        <div class="text-center mb-8">
-            <span class="text-xs uppercase tracking-widest text-[#8a5d49] font-bold">Selamat Datang Kembali</span>
-            <h1 class="font-display text-3xl font-bold text-[#201913] mt-1">Masuk Akun</h1>
-            <p class="text-xs text-[#66574b] mt-2">Akses reservasi dan layanan eksklusif Kafiber Restoran</p>
+        <div class="w-14 h-14 rounded-full bg-[#5e392e] text-white flex items-center justify-center font-display italic font-bold text-xl mx-auto mb-5 shadow-md">
+            K
         </div>
 
+        <h1 class="font-display text-3xl font-semibold text-center text-[#201913] mb-1">
+            Masuk ke Akun
+        </h1>
+        <p class="text-center text-sm text-[#66574b] mb-8">
+            Kelola reservasi dan nikmati kemudahan di Kafiber
+        </p>
+
         <?php if (!empty($error_message)): ?>
-            <div class="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+            <div class="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs text-center font-medium">
                 <?= e($error_message) ?>
             </div>
         <?php endif; ?>

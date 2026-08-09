@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\RestaurantTableFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RestaurantTable extends Model
@@ -19,6 +20,7 @@ class RestaurantTable extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'restaurant_id',
         'table_number',
         'capacity',
         'location_area',
@@ -28,5 +30,10 @@ class RestaurantTable extends Model
     public function reservations(): HasMany
     {
         return $this->hasMany(Reservation::class, 'table_id', 'table_id');
+    }
+
+    public function restaurant(): BelongsTo
+    {
+        return $this->belongsTo(Restaurant::class, 'restaurant_id', 'restaurant_id');
     }
 }

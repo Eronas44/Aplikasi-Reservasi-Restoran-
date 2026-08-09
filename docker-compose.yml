@@ -4,16 +4,14 @@ services:
     build:
       context: ./frontend_v2
       dockerfile: Dockerfile
-    container_name: eronas-frontend
+    container_name: eronas-frontend2
     ports:
       - "8000:8000"
     environment:
       NODE_ENV: production
       API_URL: http://backend:8000
     volumes:
-      - ./frontend/index.php:/app/index.php:ro
-      - ./frontend/src:/app/src:ro
-      - ./frontend/public:/app/public:ro
+      - ./frontend_v2:/app:ro
     depends_on:
       - backend
     restart: unless-stopped

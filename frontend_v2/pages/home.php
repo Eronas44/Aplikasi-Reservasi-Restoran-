@@ -1,5 +1,5 @@
 <?php
-// pages/home.php — Halaman Utama (Landing Page)
+// pages/home.php — Halaman Utama (Landing Page) — style frontend lama (v1)
 $restaurantName = 'Rasa & Cerita';
 $restaurantPhone = '+62 829 6573 9824';
 $restaurantAddress = 'Jl. Soekarno Hatta No.113, Lampung, Indonesia';
@@ -37,7 +37,7 @@ $featuredMenu = [];
       <p class="mt-6 max-w-2xl text-lg leading-8 text-[#4f4338]">
         <?= e($restaurantName) ?> Dari meja reservasi hingga pesanan siap saji, menyatukan alur kerja restoran dalam satu genggaman. Tampil berkelas, layani lebih cepat.
       </p>
-     
+
       <!-- Tombol Hero Dinamis -->
       <div class="mt-4 flex flex-wrap gap-4">
         <?php if ($isLoggedIn): ?>
@@ -49,146 +49,173 @@ $featuredMenu = [];
         <?php endif; ?>
       </div>
     </div>
+    <div class="relative">
+      <div class="hero-card">
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+        <div class="rounded-[2rem] border border-white/60 bg-white/90 p-4 shadow-2xl backdrop-blur relative overflow-hidden h-[360px] md:h-[420px] flex items-center justify-center group">
+          <!-- Carousel Slides Container -->
+          <div class="carousel-container relative w-full h-full rounded-2xl overflow-hidden">
+            <div class="carousel-slide absolute inset-0 opacity-100 transition-opacity duration-1000 ease-in-out">
+              <img src="assets/images/slide_makanan/Makanan 1.jpg" alt="Makanan 1" class="w-full h-full object-cover">
+            </div>
+            <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out">
+              <img src="assets/images/slide_makanan/makanan 2.jpg" alt="Makanan 2" class="w-full h-full object-cover">
+            </div>
+            <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out">
+              <img src="assets/images/slide_makanan/makanan 3.jpg" alt="Makanan 3" class="w-full h-full object-cover">
+            </div>
+            <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out">
+              <img src="assets/images/slide_makanan/makanan 4.jpg" alt="Makanan 4" class="w-full h-full object-cover">
+            </div>
+            <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out">
+              <img src="assets/images/slide_makanan/makanan 5.jpg" alt="Makanan 5" class="w-full h-full object-cover">
+            </div>
+          </div>
 
-    <!-- CAROUSEL BANNER / SUASANA RESTORAN -->
-    <div class="relative overflow-hidden rounded-[2.5rem] shadow-2xl border-4 border-white/40 h-[480px]">
-      <div id="carousel-slides" class="w-full h-full relative">
-        <div class="carousel-slide absolute inset-0 opacity-100 transition-opacity duration-1000">
-          <img src="assets/images/ruangan_utama/1.png" alt="Ruangan Utama 1" class="w-full h-full object-cover">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-          <div class="absolute bottom-6 left-6 right-6 text-white">
-            <span class="text-xs uppercase tracking-widest text-[#e8c39e] font-bold">Ruangan Utama</span>
-            <h3 class="font-display text-2xl font-bold mt-1">Suasana Elegan & Nyaman</h3>
+          <!-- Navigation Buttons -->
+          <button onclick="prevSlide()" class="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/85 hover:bg-white text-stone-900 border border-stone-200/50 rounded-full flex items-center justify-center shadow-md transition opacity-0 group-hover:opacity-100 focus:outline-none z-10">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <button onclick="nextSlide()" class="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/85 hover:bg-white text-stone-900 border border-stone-200/50 rounded-full flex items-center justify-center shadow-md transition opacity-0 group-hover:opacity-100 focus:outline-none z-10">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+          </button>
+
+          <!-- Indicators -->
+          <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            <span onclick="setSlide(0)" class="carousel-indicator w-2.5 h-2.5 rounded-full bg-white/85 cursor-pointer transition shadow-sm"></span>
+            <span onclick="setSlide(1)" class="carousel-indicator w-2.5 h-2.5 rounded-full bg-white/35 cursor-pointer transition shadow-sm"></span>
+            <span onclick="setSlide(2)" class="carousel-indicator w-2.5 h-2.5 rounded-full bg-white/35 cursor-pointer transition shadow-sm"></span>
+            <span onclick="setSlide(3)" class="carousel-indicator w-2.5 h-2.5 rounded-full bg-white/35 cursor-pointer transition shadow-sm"></span>
+            <span onclick="setSlide(4)" class="carousel-indicator w-2.5 h-2.5 rounded-full bg-white/35 cursor-pointer transition shadow-sm"></span>
           </div>
         </div>
 
-        <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000">
-          <img src="assets/images/area_privat/2.png" alt="Area Privat 2" class="w-full h-full object-cover">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-          <div class="absolute bottom-6 left-6 right-6 text-white">
-            <span class="text-xs uppercase tracking-widest text-[#e8c39e] font-bold">Area VIP / Privat</span>
-            <h3 class="font-display text-2xl font-bold mt-1">Pengalaman Santap Eksklusif</h3>
-          </div>
-        </div>
+        <script>
+          let currentSlide = 0;
+          const slides = document.querySelectorAll('.carousel-slide');
+          const indicators = document.querySelectorAll('.carousel-indicator');
+          let autoSlideInterval;
 
-        <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000">
-          <img src="assets/images/suasana_malam/3.png" alt="Suasana Malam 3" class="w-full h-full object-cover">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-          <div class="absolute bottom-6 left-6 right-6 text-white">
-            <span class="text-xs uppercase tracking-widest text-[#e8c39e] font-bold">Suasana Malam</span>
-            <h3 class="font-display text-2xl font-bold mt-1">Cahaya Hangat Restoran</h3>
-          </div>
-        </div>
+          function showSlide(index) {
+            slides.forEach((slide, i) => {
+              if (i === index) {
+                slide.classList.remove('opacity-0');
+                slide.classList.add('opacity-100');
+                indicators[i].classList.remove('bg-white/35');
+                indicators[i].classList.add('bg-white/85');
+              } else {
+                slide.classList.add('opacity-0');
+                slide.classList.remove('opacity-100');
+                indicators[i].classList.remove('bg-white/85');
+                indicators[i].classList.add('bg-white/35');
+              }
+            });
+            currentSlide = index;
+          }
 
-        <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000">
-          <img src="assets/images/slide_makanan/4.png" alt="Slide Makanan 4" class="w-full h-full object-cover">
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-          <div class="absolute bottom-6 left-6 right-6 text-white">
-            <span class="text-xs uppercase tracking-widest text-[#e8c39e] font-bold">Hidangan Spesial</span>
-            <h3 class="font-display text-2xl font-bold mt-1">Cita Rasa Otentik</h3>
-          </div>
-        </div>
-      </div>
+          function nextSlide() {
+            let next = (currentSlide + 1) % slides.length;
+            showSlide(next);
+            resetAutoSlide();
+          }
 
-      <!-- Indikator Carousel Dot -->
-      <div class="absolute bottom-4 right-6 flex space-x-2 z-10">
-        <button class="carousel-dot w-3 h-3 rounded-full bg-white/40 hover:bg-white transition" onclick="setSlide(0)"></button>
-        <button class="carousel-dot w-3 h-3 rounded-full bg-white/40 hover:bg-white transition" onclick="setSlide(1)"></button>
-        <button class="carousel-dot w-3 h-3 rounded-full bg-white/40 hover:bg-white transition" onclick="setSlide(2)"></button>
-        <button class="carousel-dot w-3 h-3 rounded-full bg-white/40 hover:bg-white transition" onclick="setSlide(3)"></button>
+          function prevSlide() {
+            let prev = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(prev);
+            resetAutoSlide();
+          }
+
+          function setSlide(index) {
+            showSlide(index);
+            resetAutoSlide();
+          }
+
+          function startAutoSlide() {
+            autoSlideInterval = setInterval(() => {
+              let next = (currentSlide + 1) % slides.length;
+              showSlide(next);
+            }, 4000);
+          }
+
+          function resetAutoSlide() {
+            clearInterval(autoSlideInterval);
+            startAutoSlide();
+          }
+
+          showSlide(0);
+          startAutoSlide();
+        </script>
       </div>
     </div>
   </div>
 </section>
 
-<!-- SCRIPT SLIDER CAROUSEL -->
-<script>
-  let currentSlide = 0;
-  const slides = document.querySelectorAll('.carousel-slide');
-  const dots = document.querySelectorAll('.carousel-dot');
-
-  function showSlide(index) {
-    slides.forEach((slide, i) => {
-      if (i === index) {
-        slide.classList.remove('opacity-0');
-        slide.classList.add('opacity-100');
-      } else {
-        slide.classList.remove('opacity-100');
-        slide.classList.add('opacity-0');
-      }
-    });
-
-    dots.forEach((dot, i) => {
-      if (i === index) {
-        dot.classList.remove('bg-white/40');
-        dot.classList.add('bg-white', 'w-6');
-      } else {
-        dot.classList.remove('bg-white', 'w-6');
-        dot.classList.add('bg-white/40', 'w-3');
-      }
-    });
-  }
-
-  function setSlide(index) {
-    currentSlide = index;
-    showSlide(currentSlide);
-  }
-
-  setInterval(() => {
-    currentSlide = (currentSlide + 1) % slides.length;
-    showSlide(currentSlide);
-  }, 4000);
-
-  showSlide(0);
-</script>
-
-<section id="story" class="mx-auto max-w-7xl px-6 py-12 lg:px-10">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white/80 p-8 md:p-12 rounded-3xl border border-[#eadfd4]">
-    <div>
-      <span class="eyebrow">Cerita Kami</span>
-      <h2 class="mt-3 font-display text-4xl font-bold text-[#201913]">Otentik, Hangat, & Penuh Kenangan</h2>
-      <p class="mt-4 text-[#4f4338] leading-relaxed">
-        Berdiri sejak tahun 2026, Kafiber berkomitmen menyajikan kelezatan hidangan nusantara dan internasional dengan sentuhan modern. Kami percaya setiap hidangan membawa cerita dan momen berharga.
-      </p>
+<section id="fitur" class="mx-auto max-w-7xl px-6 py-4 lg:px-10">
+  <div class="grid gap-6 md:grid-cols-3">
+    <div class="feature-card flex flex-col items-center text-center p-8 bg-white/70 border border-[#eadfd4] rounded-3xl shadow-sm">
+      <div class="w-20 h-20 bg-[#efe0d5] border border-[#decbbd] rounded-2xl flex items-center justify-center mb-5 shadow-sm">
+        <svg viewBox="0 0 64 64" class="w-12 h-12 text-[#8a5d49]" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="32" cy="20" r="8" />
+          <path d="M12 50c0-10 10-14 20-14s20 4 20 14" stroke-linecap="round" />
+          <circle cx="16" cy="24" r="6" />
+          <path d="M4 52c0-8 6-12 12-12" stroke-linecap="round" />
+          <circle cx="48" cy="24" r="6" />
+          <path d="M60 52c0-8-6-12-12-12" stroke-linecap="round" />
+        </svg>
+      </div>
+      <p class="feature-kicker text-xs uppercase tracking-[0.24em] text-[#8a5d49] font-bold">Kapasitas</p>
+      <h3 class="feature-title font-display text-xl font-bold mt-2 text-[#201913]">Hingga 120 Tamu</h3>
+      <p class="feature-text text-sm text-[#66574b] mt-3 leading-relaxed">Ruang utama & area privat untuk acara Anda.</p>
     </div>
-    <div class="rounded-2xl overflow-hidden shadow-lg border border-[#eadfd4]">
-      <img src="assets/images/indoroutdor/1.png" alt="Outdoor View" class="w-full h-64 object-cover">
+
+    <div class="feature-card flex flex-col items-center text-center p-8 bg-white/70 border border-[#eadfd4] rounded-3xl shadow-sm">
+      <div class="w-20 h-20 bg-[#efe0d5] border border-[#decbbd] rounded-2xl flex items-center justify-center mb-5 shadow-sm">
+        <svg viewBox="0 0 64 64" class="w-12 h-12 text-[#8a5d49]" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M10 36h44M18 36v20M46 36v20" stroke-linecap="round"/>
+          <path d="M14 26H8v28M50 26h6v28" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="feature-kicker text-xs uppercase tracking-[0.24em] text-[#8a5d49] font-bold">Suasana</p>
+      <h3 class="feature-title font-display text-xl font-bold mt-2 text-[#201913]">Meja & Suasana</h3>
+      <p class="feature-text text-sm text-[#66574b] mt-3 leading-relaxed">Pilih meja sesuai suasana yang Anda inginkan.</p>
+    </div>
+
+    <div class="feature-card flex flex-col items-center text-center p-8 bg-white/70 border border-[#eadfd4] rounded-3xl shadow-sm">
+      <div class="w-20 h-20 bg-[#efe0d5] border border-[#decbbd] rounded-2xl flex items-center justify-center mb-5 shadow-sm">
+        <svg viewBox="0 0 64 64" class="w-12 h-12 text-[#8a5d49]" fill="currentColor" stroke="none">
+          <path d="M18 24l3.5 7.5 8 1-6 5.5 1.5 8-7-4.5-7 4.5 1.5-8-6-5.5 8-1z" opacity="0.8"/>
+          <path d="M32 14l4.5 9.5 10 1.5-7.5 7 2 10-9-5.5-9 5.5 2-10-7.5-7 10-1.5z" />
+          <path d="M46 24l3.5 7.5 8 1-6 5.5 1.5 8-7-4.5-7 4.5 1.5-8-6-5.5 8-1z" opacity="0.8"/>
+        </svg>
+      </div>
+      <p class="feature-kicker text-xs uppercase tracking-[0.24em] text-[#8a5d49] font-bold">Ulasan</p>
+      <h3 class="feature-title font-display text-xl font-bold mt-2 text-[#201913]">Rating 4.9 / 5</h3>
+      <p class="feature-text text-sm text-[#66574b] mt-3 leading-relaxed">Dari lebih dari 800 ulasan tamu kami.</p>
     </div>
   </div>
 </section>
 
-<!-- SECTION MENU KULINER -->
 <section id="menu-kuliner" class="mx-auto max-w-7xl px-6 py-12 lg:px-10">
-  <div class="text-center max-w-2xl mx-auto mb-10">
-    <span class="eyebrow">Pilihan Terbaik</span>
-    <h2 class="mt-3 font-display text-4xl font-bold text-[#201913]">Kategori Menu Kuliner</h2>
-    <p class="mt-2 text-[#4f4338]">Temukan berbagai sajian pilihan lezat racikan koki terbaik kami.</p>
+  <div class="flex items-end justify-between gap-6 mb-8">
+    <div>
+      <span class="eyebrow">Kategori Menu</span>
+      <h2 class="mt-4 font-display text-3xl text-[#201913] md:text-4xl">Pilihan hidangan utama restoran</h2>
+    </div>
+    <a href="<?= $isLoggedIn ? route('dashboard') : route('login') . '#login' ?>" class="hidden text-sm font-semibold text-[#8a5d49] md:inline">Kelola menu dari dashboard</a>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-[#eadfd4] hover:shadow-md transition">
-      <span class="text-xs uppercase tracking-[0.24em] text-[#8a5d49] font-bold">Kategori 1</span>
-      <h3 class="font-display text-xl font-bold mt-2 text-[#201913]">Makanan Utama</h3>
-      <p class="text-xs text-[#66574b] mt-1">(Main Course)</p>
-    </div>
-
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-[#eadfd4] hover:shadow-md transition">
-      <span class="text-xs uppercase tracking-[0.24em] text-[#8a5d49] font-bold">Kategori 2</span>
-      <h3 class="font-display text-xl font-bold mt-2 text-[#201913]">Hidangan Pembuka</h3>
-      <p class="text-xs text-[#66574b] mt-1">(Appetizer)</p>
-    </div>
-
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-[#eadfd4] hover:shadow-md transition">
-      <span class="text-xs uppercase tracking-[0.24em] text-[#8a5d49] font-bold">Kategori 3</span>
-      <h3 class="font-display text-xl font-bold mt-2 text-[#201913]">Makanan Penutup</h3>
-      <p class="text-xs text-[#66574b] mt-1">(Dessert)</p>
-    </div>
-
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-[#eadfd4] hover:shadow-md transition">
-      <span class="text-xs uppercase tracking-[0.24em] text-[#8a5d49] font-bold">Kategori 4</span>
-      <h3 class="font-display text-xl font-bold mt-2 text-[#201913]">Minuman</h3>
-      <p class="text-xs text-[#66574b] mt-1">(Beverages)</p>
-    </div>
+  <div class="bg-[#efebe4]/80 border border-[#eadfd4] rounded-3xl p-8 flex flex-col md:flex-row justify-between gap-6 text-center md:text-left items-center md:items-stretch shadow-sm">
+    <?php foreach ($featuredCategories as $i => $cat): ?>
+      <div class="flex-1 flex flex-col justify-center py-2">
+        <span class="text-xs uppercase tracking-[0.24em] text-[#8a5d49] font-bold">Kategori <?= $i + 1 ?></span>
+        <h3 class="font-display text-xl font-bold mt-1 text-[#201913]"><?= e($cat['category_name']) ?></h3>
+        <p class="text-xs text-[#66574b] mt-1"><?= e($cat['category_name'] === 'Makanan Utama' ? '(Asian & Western Cuisine)' : ($cat['category_name'] === 'Hidangan Pembuka' ? '(Appetizer)' : ($cat['category_name'] === 'Makanan Penutup' ? '(Dessert)' : '(Beverages)'))) ?></p>
+      </div>
+      <?php if ($i < count($featuredCategories) - 1): ?>
+        <div class="hidden md:block w-px bg-[#eadfd4]"></div>
+      <?php endif; ?>
+    <?php endforeach; ?>
   </div>
 </section>
 

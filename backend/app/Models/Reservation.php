@@ -50,6 +50,11 @@ class Reservation extends Model
         return $this->hasMany(ReservationItem::class, 'reservation_id', 'reservation_id');
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'reservation_id', 'reservation_id');
+    }
+
     protected function casts(): array
     {
         return [

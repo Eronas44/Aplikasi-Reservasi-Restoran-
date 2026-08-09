@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CheckInRequest;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 use App\Models\Reservation;
+use App\Models\TableStatusLog;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 
@@ -82,6 +84,95 @@ class ReservationController extends Controller
 
         return response()->json([
             'message' => 'Reservation deleted.',
+        ]);
+    }
+
+    /**
+     * Validasi kedatangan tamu (check-in / no-show) sesuai alur flowchart:
+     *  - Tamu hadir  -> status "completed", meja "occupied"
+     *  - Tidak hadir -> status "no_show", meja kembali "available" + refund deposit
+     */
+    public function checkIn(CheckInRequest $request, int $reservation): JsonResponse
+    {
+        $model = Reservation::query()->findOrFail($reservation);
+
+        if (!in_array($model->status, ['confirmed', 'pending'], true)) {
+            return response()->json([
+                'message' => 'Reservation is not in a check-in-able state.',
+            ], 422);
+        }
+
+        $action = $request->input('status', 'completed');
+
+        if ($action === 'no_show') {
+            $oldStatus = $model->table?->status;
+            $model->update([
+                'status' => 'no_show',
+                'payment_status' => 'unpaid',
+            ]);
+
+            if ($model->table) {
+                $model->table->update(['status' => 'available']);
+                TableStatusLog::query()->create([
+                    'table_id' => $model->table_id,
+                    'old_status' => $oldStatus,
+                    'new_status' => 'available',
+                    'changed_by' => auth('web')->id(),
+                    'note' => 'Auto cancel due to no-show (refund processed).',
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Reservation marked as no-show. Table released.',
+                'data' => $model->fresh()->load(['user', 'staff', 'table', 'items.menu']),
+            ]);
+        }
+
+        $oldStatus = $model->table?->status;
+        $model->update([
+            'status' => 'completed',
+        ]);
+
+        if ($model->table) {
+            $model->table->update(['status' => 'occupied']);
+            TableStatusLog::query()->create([
+                'table_id' => $model->table_id,
+                'old_status' => $oldStatus,
+                'new_status' => 'occupied',
+                'changed_by' => auth('web')->id(),
+                'note' => 'Guest arrived - checked in.',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Guest checked in. Table marked as occupied.',
+            'data' => $model->fresh()->load(['user', 'staff', 'table', 'items.menu']),
+        ]);
+    }
+
+    /**
+     * Update status meja secara manual (mis. selesai dibersihkan -> available),
+     * dicatat ke table_status_logs (FR-009 / alur staf).
+     */
+    public function updateTableStatus(int $reservation): JsonResponse
+    {
+        $model = Reservation::query()->findOrFail($reservation);
+
+        if ($model->table) {
+            $oldStatus = $model->table->status;
+            $model->table->update(['status' => 'available']);
+            TableStatusLog::query()->create([
+                'table_id' => $model->table_id,
+                'old_status' => $oldStatus,
+                'new_status' => 'available',
+                'changed_by' => auth('web')->id(),
+                'note' => 'Table cleaned & released by staff.',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Table released.',
+            'data' => $model->fresh()->load(['user', 'staff', 'table', 'items.menu']),
         ]);
     }
 }
