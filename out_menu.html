@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kafiber — Restoran Reservasi</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Favicon & Custom CSS -->
+    <link rel="icon" type="image/png" href="assets/images/kafiber.png">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+      .nav-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        border: 1px solid rgba(255,255,255,0.3);
+        background: rgba(255,255,255,0.1);
+        padding: 0.55rem 1.1rem;
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: #fff;
+        text-decoration: none;
+        transition: background 180ms ease, border-color 180ms ease;
+      }
+      .nav-pill:hover {
+        background: rgba(255,255,255,0.2);
+        border-color: rgba(255,255,255,0.5);
+      }
+    </style>
+</head>
+<body class="bg-[#f4ece1] font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- KOMPONEN NAVBAR -->
+    
+<!-- NAVBAR -->
+<header style="background: linear-gradient(135deg, #3b1f14 0%, #5e392e 40%, #8a5d49 100%); padding: 1rem 1.5rem;">
+  <div style="max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+
+    <!-- Logo Brand -->
+    <a href="index.php?page=home" style="display: inline-flex; align-items: center; gap: 0.65rem; text-decoration: none; color: #fff; padding: 0.5rem 0;">
+      <img src="assets/images/kafiber.png" alt="Logo Kafiber" style="width: 2.8rem; height: 2.8rem; object-fit: contain; border-radius: 9999px; background: #fff;">
+      <span class="font-display" style="font-size: 1.15rem; font-style: italic; color: #fff;">Kafiber</span>
+    </a>
+
+    <!-- MENU NAVIGASI TENGAH -->
+        <nav style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+      <a href="index.php?page=home" class="nav-pill">Beranda</a>
+    </nav>
+    
+    <!-- Tombol Aksi Kanan Atas -->
+    <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+              
+        <a href="index.php?page=login" style="display: inline-flex; align-items: center; justify-content: center; border-radius: 9999px; background: #fff; padding: 0.7rem 1.4rem; font-size: 0.95rem; font-weight: 700; color: #5e392e; text-decoration: none; box-shadow: 0 4px 16px rgba(0,0,0,0.18);">
+          Masuk / Daftar
+        </a>
+
+          </div>
+
+  </div>
+</header>
+
+    <!-- KONTEN DINAMIS HALAMAN -->
+    <main class="flex-grow">
+        

@@ -15,4 +15,9 @@ php artisan migrate --force --no-interaction
 php artisan config:clear --no-interaction
 php artisan config:cache --no-interaction
 
+# Pastikan direktori penyimpanan gambar publik tersedia & dapat ditulis
+mkdir -p storage/app/public/menu_images
+chown -R www-data:www-data storage/app/public
+chmod -R 775 storage/app/public
+
 exec "$@"

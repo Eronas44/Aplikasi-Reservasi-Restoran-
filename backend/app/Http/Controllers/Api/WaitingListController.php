@@ -13,7 +13,7 @@ class WaitingListController extends Controller
     {
         return response()->json([
             'data' => WaitingList::query()
-                ->orderByRaw("FIELD(status, 'waiting', 'seated', 'cancelled')")
+                ->orderByRaw("CASE status WHEN 'waiting' THEN 0 WHEN 'seated' THEN 1 ELSE 2 END")
                 ->orderBy('created_at')
                 ->get(),
         ]);

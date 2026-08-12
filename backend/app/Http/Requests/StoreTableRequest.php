@@ -17,10 +17,13 @@ class StoreTableRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'table_number' => ['required', 'string', 'max:50'],
-            'capacity' => ['required', 'integer', 'min:1'],
+            'restaurant_id' => ['nullable', 'integer', 'exists:restaurants,restaurant_id'],
+            'table_number'  => ['required', 'string', 'max:50'],
+            'capacity'      => ['required', 'integer', 'min:1'],
             'location_area' => ['required', 'in:indoor,outdoor,smoking,vip'],
-            'status' => ['sometimes', 'in:available,reserved,occupied,maintenance'],
+            'status'        => ['sometimes', 'in:available,reserved,occupied,maintenance'],
+            'layout_row'    => ['nullable', 'integer', 'min:1', 'max:100'],
+            'layout_column' => ['nullable', 'integer', 'min:1', 'max:100'],
         ];
     }
 }

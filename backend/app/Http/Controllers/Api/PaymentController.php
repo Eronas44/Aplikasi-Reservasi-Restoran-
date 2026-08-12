@@ -12,11 +12,13 @@ class PaymentController extends Controller
 {
     public function index(): JsonResponse
     {
+        $perPage = min(max((int) request()->query('limit', 20), 1), 500);
+
         return response()->json([
             'data' => Payment::query()
                 ->with('reservation')
                 ->orderByDesc('payment_id')
-                ->paginate(20),
+                ->paginate($perPage),
         ]);
     }
 

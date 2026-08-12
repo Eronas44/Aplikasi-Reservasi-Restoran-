@@ -21,6 +21,7 @@ class Menu extends Model
 
     protected $fillable = [
         'category_id',
+        'restaurant_id',
         'item_name',
         'description',
         'price',
@@ -39,6 +40,11 @@ class Menu extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id', 'category_id');
+    }
+
+    public function restaurant(): BelongsTo
+    {
+        return $this->belongsTo(Restaurant::class, 'restaurant_id', 'restaurant_id');
     }
 
     public function reservationItems(): HasMany

@@ -12,11 +12,13 @@ class ReservationItemController extends Controller
 {
     public function index(): JsonResponse
     {
+        $perPage = min(max((int) request()->query('limit', 20), 1), 500);
+
         return response()->json([
             'data' => ReservationItem::query()
                 ->with(['reservation', 'menu'])
                 ->orderBy('reservation_item_id')
-                ->paginate(20),
+                ->paginate($perPage),
         ]);
     }
 

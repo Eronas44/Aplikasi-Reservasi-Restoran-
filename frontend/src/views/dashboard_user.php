@@ -4,6 +4,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Fallback aman untuk menghindari warning/error undefined constant LAYOUTS_PATH
+if (!defined('LAYOUTS_PATH')) {
+    define('LAYOUTS_PATH', __DIR__ . '/../layouts'); // Sesuaikan path folder layouts Anda jika diperlukan
+}
+
 // Pastikan user sudah login
 $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
 if (!$isLoggedIn) {
@@ -81,7 +86,7 @@ include LAYOUTS_PATH . '/header.php';
         <!-- Restoran D -->
         <a href="<?= route('detail_restoran', ['resto' => 'D']) ?>" class="bg-white/80 border border-[#eadfd4] rounded-3xl p-5 shadow-sm flex flex-col hover:border-[#8a5d49] transition group">
           <div class="w-full h-48 rounded-2xl overflow-hidden mb-4 border border-[#eadfd4] relative carousel-container" data-images='["img/Resto/KapsulD.jpg", "img/Resto/tapayakirestoD.jpg", "img/Resto/ViewRestoD.jpg"]'>
-            <img src="img/Resto/artspacerestoD.jpg" alt="Restoran D" class="w-full h-full object-cover transition-opacity duration-700 carousel-img">
+            <img src="img/Resto/KapsulD.jpg" alt="Restoran D" class="w-full h-full object-cover transition-opacity duration-700 carousel-img">
           </div>
           <div class="flex items-center justify-between mt-auto">
             <h3 class="font-display text-lg font-bold text-[#201913] group-hover:text-[#8a5d49] transition">Restoran D</h3>
@@ -90,7 +95,6 @@ include LAYOUTS_PATH . '/header.php';
         </a>
 
       </div>
-      </div>
     </div>
 
   </div>
@@ -98,7 +102,7 @@ include LAYOUTS_PATH . '/header.php';
 
 <!-- Script untuk Slide Otomatis -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+(function() {
     const carousels = document.querySelectorAll(".carousel-container");
 
     carousels.forEach(container => {
@@ -120,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 3500); // Ganti gambar setiap 3.5 detik
         }
     });
-});
+})();
 </script>
 
 <?php include LAYOUTS_PATH . '/footer.php'; ?>

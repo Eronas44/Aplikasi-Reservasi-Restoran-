@@ -141,6 +141,80 @@ if (!function_exists('api_post')) {
     }
 }
 
+if (!function_exists('api_upload')) {
+    /**
+     * Kirim request multipart/form-data (untuk upload file).
+     *
+     * @param string $uri       Path endpoint, contoh '/menus'
+     * @param array $fields     Data form biasa (key => value)
+     * @param array $files      File upload: field => ['tmp_name', 'name', 'type'] (dari $_FILES)
+     * @param string $method    POST / PUT / PATCH
+     *
+     * @return array{ok: bool, status: int, data: array}
+     */
+    function api_upload($uri, array $fields, array $files = [], $method = 'POST')
+    {
+        $method = strtoupper($method);
+        $url = API_BASE_URL . '/' . ltrim($uri, '/');
+
+        $post = [];
+        foreach ($fields as $key => $value) {
+            $post[$key] = (string) ($value ?? '');
+        }
+
+        foreach ($files as $key => $file) {
+            if (!is_array($file) || empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+                continue;
+            }
+            $post[$key] = new CURLFile(
+                $file['tmp_name'],
+                $file['type'] ?? 'application/octet-stream',
+                $file['name'] ?? basename($file['tmp_name'])
+            );
+        }
+
+        $ch = curl_init($url);
+
+        $options = [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_POSTFIELDS => $post,
+            CURLOPT_HTTPHEADER => ['Accept: application/json'],
+            CURLOPT_COOKIEFILE => api_cookie_file(),
+            CURLOPT_COOKIEJAR => api_cookie_file(),
+        ];
+
+        curl_setopt_array($ch, $options);
+
+        $body = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($body === false) {
+            return [
+                'ok' => false,
+                'status' => 0,
+                'data' => ['message' => 'Backend tidak dapat dihubungi. ' . $error],
+            ];
+        }
+
+        $decoded = json_decode($body, true);
+        if (!is_array($decoded)) {
+            $decoded = ['message' => 'Respons backend tidak valid.', 'raw' => $body];
+        }
+
+        return [
+            'ok' => $status >= 200 && $status < 300,
+            'status' => $status,
+            'data' => $decoded,
+        ];
+    }
+}
+
 if (!function_exists('set_frontend_session_from_user')) {
     /**
      * Sinkronkan data user dari backend ke sesi frontend.

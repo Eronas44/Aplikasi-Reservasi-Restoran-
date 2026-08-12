@@ -15,14 +15,26 @@ class ReservationController extends Controller
 {
     public function index(): JsonResponse
     {
-        $reservations = Reservation::query()
-            ->with(['user', 'staff', 'table', 'items.menu'])
+        $perPage = min(max((int) request()->query('limit', 20), 1), 500);
+
+        $query = Reservation::query()
+            ->with(['user', 'staff', 'table.restaurant', 'items.menu'])
             ->orderByDesc('reservation_date')
-            ->orderByDesc('reservation_time')
-            ->paginate(20);
+            ->orderByDesc('reservation_time');
+
+        $user = auth('web')->user();
+
+        // Staff/admin boleh memfilter reservasi per user (query user_id=...).
+        // Pelanggan hanya dapat melihat reservasi miliknya sendiri sehingga
+        // tidak bisa mengintip data reservasi pengguna lain.
+        if ($user && !in_array($user->role, ['staff', 'admin'], true)) {
+            $query->where('user_id', $user->user_id);
+        } elseif ($userId = (int) request()->query('user_id', 0)) {
+            $query->where('user_id', $userId);
+        }
 
         return response()->json([
-            'data' => $reservations,
+            'data' => $query->paginate($perPage),
         ]);
     }
 
@@ -42,7 +54,7 @@ class ReservationController extends Controller
 
         return response()->json([
             'message' => 'Reservation created.',
-            'data' => $reservation->load(['user', 'staff', 'table']),
+            'data' => $reservation->load(['user', 'staff', 'table.restaurant']),
         ], 201);
     }
 
@@ -50,7 +62,7 @@ class ReservationController extends Controller
     {
         return response()->json([
             'data' => Reservation::query()
-                ->with(['user', 'staff', 'table', 'items.menu'])
+                ->with(['user', 'staff', 'table.restaurant', 'items.menu'])
                 ->findOrFail($reservation),
         ]);
     }
@@ -73,7 +85,7 @@ class ReservationController extends Controller
 
         return response()->json([
             'message' => 'Reservation updated.',
-            'data' => $model->fresh()->load(['user', 'staff', 'table', 'items.menu']),
+            'data' => $model->fresh()->load(['user', 'staff', 'table.restaurant', 'items.menu']),
         ]);
     }
 
@@ -124,7 +136,7 @@ class ReservationController extends Controller
 
             return response()->json([
                 'message' => 'Reservation marked as no-show. Table released.',
-                'data' => $model->fresh()->load(['user', 'staff', 'table', 'items.menu']),
+                'data' => $model->fresh()->load(['user', 'staff', 'table.restaurant', 'items.menu']),
             ]);
         }
 
@@ -146,7 +158,7 @@ class ReservationController extends Controller
 
         return response()->json([
             'message' => 'Guest checked in. Table marked as occupied.',
-            'data' => $model->fresh()->load(['user', 'staff', 'table', 'items.menu']),
+            'data' => $model->fresh()->load(['user', 'staff', 'table.restaurant', 'items.menu']),
         ]);
     }
 
@@ -172,7 +184,7 @@ class ReservationController extends Controller
 
         return response()->json([
             'message' => 'Table released.',
-            'data' => $model->fresh()->load(['user', 'staff', 'table', 'items.menu']),
+            'data' => $model->fresh()->load(['user', 'staff', 'table.restaurant', 'items.menu']),
         ]);
     }
 }

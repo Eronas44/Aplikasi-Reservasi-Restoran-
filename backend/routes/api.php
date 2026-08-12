@@ -34,8 +34,14 @@ Route::prefix('v1')
             Route::apiResource('menus', MenuController::class)
                 ->only(['index', 'show']);
 
+            // Cari meja tersedia utk slot (tanggal + jam) tertentu - alur flowchart
+            Route::get('/tables/available', [TableController::class, 'available']);
+
             Route::apiResource('tables', TableController::class)
                 ->only(['index', 'show']);
+
+            // Pelanggan dapat mencatat pembayaran deposit/pre-order sendiri
+            Route::post('/payments', [PaymentController::class, 'store']);
 
             Route::apiResource('reservations', ReservationController::class)
                 ->except(['destroy']);
@@ -63,7 +69,6 @@ Route::prefix('v1')
 
             Route::get('/payments', [PaymentController::class, 'index']);
             Route::get('/payments/{payment}', [PaymentController::class, 'show']);
-            Route::post('/payments', [PaymentController::class, 'store']);
             Route::delete('/payments/{payment}', [PaymentController::class, 'destroy']);
 
             Route::apiResource('waiting-list', WaitingListController::class)

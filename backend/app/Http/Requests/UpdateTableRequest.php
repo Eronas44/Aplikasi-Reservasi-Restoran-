@@ -21,6 +21,8 @@ class UpdateTableRequest extends FormRequest
             'capacity' => ['sometimes', 'integer', 'min:1'],
             'location_area' => ['sometimes', 'in:indoor,outdoor,smoking,vip'],
             'status' => ['sometimes', 'in:available,reserved,occupied,maintenance'],
+            'layout_row' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:100'],
+            'layout_column' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:100'],
         ];
     }
 }

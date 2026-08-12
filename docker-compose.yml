@@ -2,16 +2,18 @@ services:
   # ==================== FRONTEND ====================
   frontend:
     build:
-      context: ./frontend_v2
+      context: ./frontend
       dockerfile: Dockerfile
-    container_name: eronas-frontend2
+    container_name: eronas-frontend
     ports:
       - "8000:8000"
     environment:
       NODE_ENV: production
       API_URL: http://backend:8000
+      # URL backend yang bisa dijangkau browser pengguna (untuk gambar & aset publik).
+      API_PUBLIC_URL: http://localhost:8080
     volumes:
-      - ./frontend_v2:/app:ro
+      - ./frontend:/app:ro
     depends_on:
       - backend
     restart: unless-stopped
@@ -42,6 +44,9 @@ services:
     volumes:
       - backend_storage:/var/www/html/storage
       - backend_db:/var/www/html/database
+      # Database SQLite tetap persisten di volume, tetapi file migrasi dari
+      # workspace harus terlihat agar migrasi baru ikut dijalankan saat boot.
+      - ./backend/database/migrations:/var/www/html/database/migrations:ro
       - ./backend:/var/www/html
       - ./backend/docker/conf.d:/var/www/html/docker/conf.d:ro
     healthcheck:

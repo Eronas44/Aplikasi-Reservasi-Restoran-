@@ -33,6 +33,11 @@ class Restaurant extends Model
         return $this->hasMany(RestaurantTable::class, 'restaurant_id', 'restaurant_id');
     }
 
+    public function menus(): HasMany
+    {
+        return $this->hasMany(Menu::class, 'restaurant_id', 'restaurant_id');
+    }
+
     public function openingHours(): HasMany
     {
         return $this->hasMany(OpeningHour::class, 'restaurant_id', 'restaurant_id');

@@ -25,6 +25,8 @@ class RestaurantTable extends Model
         'capacity',
         'location_area',
         'status',
+        'layout_row',
+        'layout_column',
     ];
 
     public function reservations(): HasMany

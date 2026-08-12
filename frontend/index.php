@@ -1,100 +1,77 @@
 <?php
 /**
- * ==========================================
- * ROUTER TERPUSAT - APLIKASI RESERVASI RESTORAN
- * ==========================================
+ * ===================================================
+ * SINGLE ENTRYPOINT ROUTER — FRONTEND_V2
+ * ===================================================
+ * Router terpusat untuk aplikasi reservasi restoran.
+ * Menggunakan query parameter (?page=nama_halaman) dengan
+ * sanitasi basename() untuk mencegah celah Directory Traversal.
  */
 
-// ==========================================
-// KONFIGURASI & INISIALISASI
-// ==========================================
-
-// Start session
+// 1. Inisialisasi Sesi PHP
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Define constants
-define('BASE_PATH', __DIR__);
-define('VIEWS_PATH', BASE_PATH . '/src/views');
-define('LAYOUTS_PATH', BASE_PATH . '/src/layouts');
-define('COMPONENTS_PATH', BASE_PATH . '/src/components');
-define('ASSETS_PATH', BASE_PATH . '/public');
+// 1b. Output buffering agar header('Location: ...') tetap terkirim meski
+//     halaman dirender setelah HTML layout mulai dikeluarkan.
+ob_start();
 
-// Helper function untuk HTML escape
+// 2. Helper Functions Global
 if (!function_exists('e')) {
     function e($value) {
-        return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        return htmlspecialchars((string) ($value ?? ''), ENT_QUOTES, 'UTF-8');
     }
 }
-
-// Helper function untuk generate URL
-function route($page = '', $params = []) {
-    $query = [];
-
-    if (!empty($page)) {
-        $query['page'] = $page;
-    }
-
-    if (is_array($params) && count($params) > 0) {
-        foreach ($params as $key => $value) {
-            if ($value !== null && $value !== '') {
-                $query[$key] = $value;
-            }
-        }
-    }
-
-    if (count($query) === 0) {
-        return 'index.php';
-    }
-
-    return 'index.php?' . http_build_query($query);
-}
-
-// Helper function untuk check active page
-function isActive($page) {
-    $current = isset($_GET['page']) ? $_GET['page'] : 'home';
-    return $current === $page ? 'active' : '';
-}
-
-// ==========================================
-// AMBIL PARAMETER PAGE
-// ==========================================
 
 function sanitize($input) {
     return preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $input);
 }
 
-// Default page adalah 'home'
-$page = isset($_GET['page']) ? sanitize($_GET['page']) : 'home';
+function route($page = '', $params = []) {
+    $query = [];
+    if (!empty($page)) {
+        $query['page'] = $page;
+    }
+    if (is_array($params) && count($params) > 0) {
+        foreach ($params as $k => $v) {
+            if ($v !== null && $v !== '') {
+                $query[$k] = $v;
+            }
+        }
+    }
+    return 'index.php' . (!empty($query) ? '?' . http_build_query($query) : '');
+}
 
-// ==========================================
-// MAPPING ROUTES KE FILES (DISINKRONKAN)
-// ==========================================
+function isActive($pageName) {
+    $currentRaw = isset($_GET['page']) ? $_GET['page'] : 'home';
+    $current = sanitize(basename($currentRaw));
+    return $current === $pageName ? 'active-nav' : '';
+}
 
-$routes = [
-    'home'               => 'home.php',
-    'login'              => 'login.php',
-    'register'           => 'register.php',
-    'dashboard'          => 'dashboard_user.php',
-    'galeri'             => 'galeri.php',
-    'menu'               => 'menu.php',
-    'story'              => 'story.php',
-    'reservasi'          => 'reservasi.php', // <-- DITAMBAHKAN AGAR TIDAK 404
-    'reservations'       => 'reservasi.php',
-    'reservation-form'   => 'reservasi.php', 
-    'proses_reservasi'   => 'proses_reservasi.php', 
-    'detail_restoran'    => 'detail_restoran.php',
-];
+function is_user_logged_in() {
+    return isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
+}
 
-// Proteksi akses (ditambahkan 'reservasi' agar aman)
-$authRequiredPages = ['dashboard', 'galeri', 'reservasi', 'reservations', 'reservation-form', 'detail_restoran'];
-$guestOnlyPages    = ['login', 'register'];
+function dashboard_route() {
+    $role = $_SESSION['role'] ?? 'customer';
+    if ($role === 'admin') {
+        return route('dashboard_admin');
+    }
+    if ($role === 'staff') {
+        return route('dashboard_staff');
+    }
+    return route('dashboard');
+}
 
-// ==========================================
-// LOGOUT
-// ==========================================
+// 3. Tangkap & Sanitasi Parameter URL ?page= (Pencegahan Directory Traversal via basename)
+$rawPage = isset($_GET['page']) ? $_GET['page'] : 'home';
+$page = sanitize(basename($rawPage));
+if (empty($page)) {
+    $page = 'home';
+}
 
+// 4. Penanganan Fitur Logout
 if ($page === 'logout') {
     if (file_exists(__DIR__ . '/src/config/api.config.php')) {
         require_once __DIR__ . '/src/config/api.config.php';
@@ -110,92 +87,109 @@ if ($page === 'logout') {
     exit;
 }
 
-// ==========================================
-// VALIDASI AKSES
-// ==========================================
+// 5. Mapping Alias Route ke File di Folder pages/
+$routeMap = [
+    'home'               => 'home.php',
+    'login'              => 'login.php',
+    'register'           => 'register.php',
+    'dashboard'          => 'dashboard_user.php',
+    'galeri'             => 'galeri.php',
+    'menu'               => 'menu.php',
+    'story'              => 'story.php',
+    'reservasi'          => 'reservasi.php',
+    'reservations'       => 'reservasi.php',
+    'reservation-form'   => 'reservasi.php',
+    'proses_reservasi'   => 'proses_reservasi.php',
+    'preview_restoran'   => 'preview_restoran.php',
+    'detail_restoran'    => 'detail_restoran.php',
+    // Halaman Customer
+    'pembayaran'         => 'pembayaran.php',
+    'pilih_meja'         => 'pilih_meja.php',
+    'sukses_reservasi'   => 'sukses_reservasi.php',
+    'riwayat_reservasi'  => 'riwayat_reservasi.php',
+    // Halaman Staff
+    'dashboard_staff'    => 'dashboard_staff.php',
+    'denah_meja'         => 'denah_meja.php',
+    'jadwal_hari_ini'    => 'jadwal_hari_ini.php',
+    'checkin'            => 'checkin.php',
+    'walkin'             => 'walkin.php',
+    // Halaman Admin
+    'dashboard_admin'    => 'dashboard_admin.php',
+    'kelola_meja'        => 'kelola_meja.php',
+    'kelola_menu'        => 'kelola_menu.php',
+    'kelola_restoran'    => 'kelola_restoran.php',
+    'kelola_reservasi'   => 'kelola_reservasi.php',
+    'jam_operasional'    => 'jam_operasional.php',
+    'kebijakan'          => 'kebijakan.php',
+    'kelola_staf'        => 'kelola_staf.php',
+    'laporan'            => 'laporan.php',
+];
 
-if (array_key_exists($page, $routes)) {
-    // Halaman yang wajib login
-    if (in_array($page, $authRequiredPages, true) && !is_user_logged_in()) {
-        header('Location: ' . route('login'));
-        exit;
-    }
+// 6. Proteksi Akses (Auth Guard)
+$authRequiredPages = [
+    'dashboard', 'reservasi', 'reservations', 'reservation-form', 'proses_reservasi',
+    'pembayaran', 'pilih_meja', 'sukses_reservasi', 'riwayat_reservasi',
+    'dashboard_staff', 'denah_meja', 'jadwal_hari_ini', 'checkin', 'walkin',
+    'dashboard_admin', 'kelola_meja', 'kelola_menu', 'kelola_restoran',
+    'kelola_reservasi',
+    'jam_operasional', 'kebijakan', 'kelola_staf', 'laporan',
+];
+$guestOnlyPages    = ['login', 'register'];
 
-    // Halaman yang hanya untuk tamu (login/register)
-    if (in_array($page, $guestOnlyPages, true) && is_user_logged_in()) {
-        header('Location: ' . route('dashboard'));
-        exit;
-    }
-}
+$staffOnlyPages = ['dashboard_staff', 'denah_meja', 'jadwal_hari_ini', 'checkin', 'walkin'];
+$adminOnlyPages = [
+    'dashboard_admin', 'kelola_meja', 'kelola_menu', 'kelola_restoran',
+    'kelola_reservasi',
+    'jam_operasional', 'kebijakan', 'kelola_staf', 'laporan',
+];
 
-// ==========================================
-// VALIDASI & INCLUDE FILE
-// ==========================================
+$userRole = isset($_SESSION['role']) ? $_SESSION['role'] : 'customer';
 
-if (array_key_exists($page, $routes)) {
-    $file = VIEWS_PATH . '/' . $routes[$page];
-
-    if (file_exists($file)) {
-        include $file;
-    } else {
-        show_404("File halaman tidak ditemukan: {$file}");
-    }
-} else {
-    show_404("Halaman '{$page}' tidak ditemukan");
-}
-
-/**
- * Cek apakah user sudah login (sesi frontend).
- */
-function is_user_logged_in() {
-    return isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
-}
-
-/**
- * Fungsi untuk menampilkan halaman 404
- */
-function show_404($message = '', $page = null) {
-    http_response_code(404);
-    if ($page === null) {
-        $page = isset($_GET['page']) ? sanitize($_GET['page']) : '';
-    }
-    
-    $layout_header = LAYOUTS_PATH . '/header.php';
-    $layout_footer = LAYOUTS_PATH . '/footer.php';
-
-    if (file_exists($layout_header)) include $layout_header;
-    ?>
-
-    <div class="min-h-screen bg-[#f4ece1] flex items-center justify-center px-6">
-        <div class="text-center max-w-md">
-            <div class="mb-8">
-                <svg class="w-24 h-24 mx-auto text-[#8a5d49]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-
-            <h1 class="font-display text-6xl font-bold text-[#201913] mb-4">404</h1>
-            <h2 class="font-display text-2xl font-bold text-[#201913] mb-2">Halaman Tidak Ditemukan</h2>
-
-            <p class="text-[#66574b] mb-8">
-                Maaf, halaman yang Anda cari tidak tersedia.
-                <?php if (!empty($message)): ?>
-                    <br><small class="text-[#8a5d49]"><?= e($message) ?></small>
-                <?php endif; ?>
-            </p>
-
-            <div class="flex flex-wrap gap-4 justify-center">
-                <a href="<?= route('home') ?>" class="inline-block bg-[#8a5d49] hover:bg-[#734d3d] text-white font-bold py-3 px-6 rounded-full transition">
-                    ← Kembali ke Beranda
-                </a>
-                <a href="<?= route('dashboard') ?>" class="inline-block border border-[#8a5d49] text-[#8a5d49] hover:bg-[#8a5d49] hover:text-white font-bold py-3 px-6 rounded-full transition">
-                    Dashboard →
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <?php
-    if (file_exists($layout_footer)) include $layout_footer;
+if (in_array($page, $authRequiredPages, true) && !is_user_logged_in()) {
+    header('Location: ' . route('login'));
     exit;
 }
+
+if (in_array($page, $guestOnlyPages, true) && is_user_logged_in()) {
+    header('Location: ' . dashboard_route());
+    exit;
+}
+
+// Role Guard: Redirect ?page=dashboard ke dashboard sesuai role
+// (mengikuti flowchart: sistem menyeleksi email -> halaman pengguna/admin/staff)
+if ($page === 'dashboard' && is_user_logged_in() && in_array($userRole, ['admin', 'staff'], true)) {
+    header('Location: ' . dashboard_route());
+    exit;
+}
+
+// Role Guard: Admin hanya
+if (in_array($page, $adminOnlyPages, true) && $userRole !== 'admin') {
+    // Staff dan customer sama-sama tidak boleh akses halaman admin
+    if ($userRole === 'staff') {
+        header('Location: ' . route('dashboard_staff'));
+    } else {
+        header('Location: ' . route('dashboard'));
+    }
+    exit;
+}
+
+// Role Guard: Customer tidak boleh akses halaman staff
+if (in_array($page, $staffOnlyPages, true) && !in_array($userRole, ['staff', 'admin'], true)) {
+    header('Location: ' . route('dashboard'));
+    exit;
+}
+
+// 7. Tentukan File Halaman Target
+$fileName = isset($routeMap[$page]) ? $routeMap[$page] : "{$page}.php";
+$pageFile = __DIR__ . "/pages/{$fileName}";
+
+// 8. Validasi Ketersediaan File (Fallback Otomatis ke 404.php)
+if (!file_exists($pageFile)) {
+    $pageFile = __DIR__ . "/pages/404.php";
+}
+
+// 9. Render Menggunakan Layout Global Utama
+include __DIR__ . '/layouts/main-layout.php';
+
+// 10. Flush buffer output (satu kali di akhir script)
+ob_end_flush();

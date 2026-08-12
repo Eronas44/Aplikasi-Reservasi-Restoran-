@@ -21,6 +21,7 @@ class StoreRestaurantRequest extends FormRequest
             'email' => ['nullable', 'email', 'max:100'],
             'rating' => ['nullable', 'numeric', 'between:0,5'],
             'image_url' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:2048'],
             'is_active' => ['sometimes', 'boolean'],
         ];
     }

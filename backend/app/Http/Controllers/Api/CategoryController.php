@@ -12,8 +12,11 @@ class CategoryController extends Controller
 {
     public function index(): JsonResponse
     {
+        $perPage = min(max((int) request()->query('limit', 20), 1), 500);
+
         return response()->json([
-            'data' => Category::query()->orderBy('category_id')->paginate(20),
+            // Data terbaru perlu terlihat langsung di tabel pengelolaan.
+            'data' => Category::query()->orderByDesc('category_id')->paginate($perPage),
         ]);
     }
 

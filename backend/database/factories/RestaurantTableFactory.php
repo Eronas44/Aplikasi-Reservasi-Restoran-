@@ -15,6 +15,7 @@ class RestaurantTableFactory extends Factory
     public function definition(): array
     {
         return [
+            'restaurant_id' => fake()->numberBetween(1, 4),
             'table_number' => 'T-' . fake()->unique()->numberBetween(1, 80),
             'capacity' => fake()->randomElement([2, 4, 6, 8]),
             'location_area' => fake()->randomElement(['indoor', 'outdoor', 'smoking', 'vip']),

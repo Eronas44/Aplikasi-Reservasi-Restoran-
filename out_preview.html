@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kafiber — Restoran Reservasi</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Favicon & Custom CSS -->
+    <link rel="icon" type="image/png" href="assets/images/kafiber.png">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+      .nav-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        border: 1px solid rgba(255,255,255,0.3);
+        background: rgba(255,255,255,0.1);
+        padding: 0.55rem 1.1rem;
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: #fff;
+        text-decoration: none;
+        transition: background 180ms ease, border-color 180ms ease;
+      }
+      .nav-pill:hover {
+        background: rgba(255,255,255,0.2);
+        border-color: rgba(255,255,255,0.5);
+      }
+    </style>
+</head>
+<body class="bg-[#f4ece1] font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- KOMPONEN NAVBAR -->
+    
+<!-- NAVBAR -->
+<header style="background: linear-gradient(135deg, #3b1f14 0%, #5e392e 40%, #8a5d49 100%); padding: 1rem 1.5rem;">
+  <div style="max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+
+    <!-- Logo Brand -->
+    <a href="index.php?page=home" style="display: inline-flex; align-items: center; gap: 0.65rem; text-decoration: none; color: #fff; padding: 0.5rem 0;">
+      <img src="assets/images/kafiber.png" alt="Logo Kafiber" style="width: 2.8rem; height: 2.8rem; object-fit: contain; border-radius: 9999px; background: #fff;">
+      <span class="font-display" style="font-size: 1.15rem; font-style: italic; color: #fff;">Kafiber</span>
+    </a>
+
+    <!-- MENU NAVIGASI TENGAH -->
+        <nav style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+      <a href="index.php?page=home" class="nav-pill">Beranda</a>
+    </nav>
+    
+    <!-- Tombol Aksi Kanan Atas -->
+    <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+              
+        <a href="index.php?page=login" style="display: inline-flex; align-items: center; justify-content: center; border-radius: 9999px; background: #fff; padding: 0.7rem 1.4rem; font-size: 0.95rem; font-weight: 700; color: #5e392e; text-decoration: none; box-shadow: 0 4px 16px rgba(0,0,0,0.18);">
+          Masuk / Daftar
+        </a>
+
+          </div>
+
+  </div>
+</header>
+
+    <!-- KONTEN DINAMIS HALAMAN -->
+    <main class="flex-grow">
+        
+<div class="mx-auto max-w-7xl px-6 py-8 lg:px-10">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+        
+<aside class="lg:col-span-1 space-y-3">
+    <div class="bg-white/80 border border-[#eadfd4] rounded-2xl p-4 shadow-sm space-y-2">
+        <div class="px-4 py-2 mb-1">
+            <span class="text-[10px] uppercase tracking-widest font-bold text-[#8a5d49]">Menu Customer</span>
+        </div>
+
+                                <a href="index.php?page=dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition text-[#5e392e] hover:bg-[#efebe4]">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                                    </svg>
+                Dashboard            </a>
+                                <a href="index.php?page=preview_restoran" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition bg-[#5e392e] text-white shadow-sm">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                                    </svg>
+                Preview Restoran            </a>
+                                <a href="index.php?page=reservasi" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition text-[#5e392e] hover:bg-[#efebe4]">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                Reservasi Restoran            </a>
+                                <a href="index.php?page=riwayat_reservasi" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition text-[#5e392e] hover:bg-[#efebe4]">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                Riwayat Reservasi            </a>
+                                <a href="index.php?page=menu" class="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition text-[#5e392e] hover:bg-[#efebe4]">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                    </svg>
+                Menu            </a>
+            </div>
+</aside>
+
+        <div class="lg:col-span-3 space-y-6">
+
+            <!-- Header -->
+            <div class="bg-[#5e392e] rounded-3xl p-8 text-white shadow-sm">
+                <span class="text-xs uppercase tracking-widest text-[#e8c39e] font-bold">Menu Preview Restoran</span>
+                <h1 class="font-display text-3xl font-bold mt-1">Jelajahi Restoran Kami</h1>
+                <p class="text-sm text-[#e8c39e] mt-1">
+                    Diambil langsung dari database. Lihat detail restoran, lalu buat reservasi meja Anda.
+                </p>
+            </div>
+
+            <!-- Daftar Restoran -->
+                            <div class="bg-white/80 border border-[#eadfd4] rounded-3xl p-10 text-center text-sm text-[#8a5d49]">
+                    Belum ada restoran yang tersedia di database. Silakan coba lagi nanti.
+                </div>
+            
+        </div>
+    </div>
+</div>    </main>
+
+    <!-- KOMPONEN FOOTER -->
+    <!-- FOOTER -->
+<footer style="background:#5e392e; padding:2.5rem 1.5rem; margin-top:2rem;">
+  <div style="max-width:1180px; margin:0 auto; display:grid; gap:2rem; grid-template-columns:1fr 1fr; align-items: center;">
+    <div>
+      <a href="#help" style="display: inline-block; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; padding: 0.75rem 2.5rem; font-weight: 700; color: #fff; text-decoration: none; transition: background 180ms ease;">
+        HELP
+      </a>
+    </div>
+    <div>
+      <p style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.2em; color:rgba(255,255,255,0.65); font-weight:700; margin:0 0 0.6rem;">Hubungi Kami</p>
+      <address style="font-style:normal; color:rgba(255,255,255,0.9); font-size:0.9rem; line-height:1.8;">
+        Jl. Soekarno Hatta No.113, Lampung, Indonesia<br>
+        +62 829 6573 9824<br>
+        forfoodies.com
+      </address>
+    </div>
+  </div>
+  <p style="text-align:center; color:rgba(255,255,255,0.5); font-size:0.8rem; margin-top:2rem;">&copy; 2026 Kafiber. Seluruh hak cipta dilindungi.</p>
+</footer>
+
+</body>
+</html>
