@@ -7,21 +7,19 @@ if (!$isLoggedIn) {
     exit;
 }
 
-// Coba ambil data dari backend (jika tersedia)
+// Muat API client (backend) untuk mengambil data reservasi milik user.
+require_once __DIR__ . '/../src/config/api.config.php';
+require_once __DIR__ . '/../src/utils/api.php';
+
+// Minta reservasi milik pengguna yang sedang login (backend memfilter user_id)
 $riwayat_api = [];
-if (file_exists(__DIR__ . '/../src/config/api.config.php')) {
-    require_once __DIR__ . '/../src/config/api.config.php';
-}
-if (file_exists(__DIR__ . '/../src/utils/api.php') && function_exists('api_get')) {
-    // Minta reservasi milik pengguna yang sedang login (backend memfilter user_id)
-    $uid = (int) ($_SESSION['user_id'] ?? 0);
-    $result = api_get(API_RESERVATIONS . '?user_id=' . $uid . '&limit=100');
-    if ($result['ok'] && isset($result['data']['data'])) {
-        $paginated = $result['data']['data'];
-        $riwayat_api = is_array($paginated) && isset($paginated['data'])
-            ? $paginated['data']
-            : $paginated;
-    }
+$uid = (int) ($_SESSION['user_id'] ?? 0);
+$result = api_get(API_RESERVATIONS . '?user_id=' . $uid . '&limit=100');
+if ($result['ok'] && isset($result['data']['data'])) {
+    $paginated = $result['data']['data'];
+    $riwayat_api = is_array($paginated) && isset($paginated['data'])
+        ? $paginated['data']
+        : $paginated;
 }
 
 $currentReservation = $_SESSION['current_reservation'] ?? null;

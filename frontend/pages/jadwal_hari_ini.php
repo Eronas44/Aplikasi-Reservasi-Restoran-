@@ -64,6 +64,7 @@ $statusMap = [
                             <tr class="border-b border-[#eadfd4] text-[#8a5d49] text-xs uppercase tracking-wider">
                                 <th class="py-3 pr-4">Waktu</th>
                                 <th class="py-3 pr-4">Nama</th>
+                                <th class="py-3 pr-4">Restoran</th>
                                 <th class="py-3 pr-4">Kode</th>
                                 <th class="py-3 pr-4">Tamu</th>
                                 <th class="py-3 pr-4">Meja</th>
@@ -79,6 +80,7 @@ $statusMap = [
                                 <tr class="border-b border-[#eadfd4] hover:bg-[#fcfaf7]">
                                     <td class="py-3 pr-4 font-bold text-[#201913]"><?= e(substr((string) ($j['reservation_time'] ?? ''), 0, 5)) ?></td>
                                     <td class="py-3 pr-4"><?= e($j['user']['name'] ?? 'Tamu') ?></td>
+                                    <td class="py-3 pr-4 font-bold text-[#8a5d49]"><?= e($j['table']['restaurant']['name'] ?? '-') ?></td>
                                     <td class="py-3 pr-4 font-mono text-xs"><?= e($kode) ?></td>
                                     <td class="py-3 pr-4"><?= (int) ($j['number_of_guest'] ?? 0) ?> org</td>
                                     <td class="py-3 pr-4 font-bold text-[#8a5d49]"><?= e($j['table']['table_number'] ?? '-') ?></td>

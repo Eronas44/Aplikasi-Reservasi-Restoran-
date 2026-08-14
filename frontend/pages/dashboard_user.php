@@ -109,7 +109,7 @@ $statusLabels = [
               <?php foreach ($myReservations as $r): ?>
                 <tr class="border-b border-[#eadfd4]">
                   <td class="py-3 pr-4 font-mono text-xs font-bold text-[#201913]"><?= e($r['booking_code'] ?? '-') ?></td>
-                  <td class="py-3 pr-4"><?= e($r['restaurant']['name'] ?? $r['restaurant']['restaurant_name'] ?? 'Restoran') ?></td>
+                  <td class="py-3 pr-4"><?= e($r['table']['restaurant']['name'] ?? $r['restaurant']['name'] ?? $r['restaurant']['restaurant_name'] ?? 'Restoran') ?></td>
                   <td class="py-3 pr-4"><?= e(substr((string) ($r['reservation_date'] ?? ''), 0, 10)) ?></td>
                   <td class="py-3 pr-4"><?= (int) ($r['number_of_guest'] ?? 0) ?> org</td>
                   <td class="py-3 pr-4">
@@ -152,8 +152,9 @@ $statusLabels = [
               <a href="<?= route('detail_restoran', ['resto_id' => $restoId]) ?>"
                  class="bg-white/80 border border-[#eadfd4] rounded-3xl p-5 shadow-sm flex flex-col hover:border-[#8a5d49] transition group">
                 <div class="w-full h-40 rounded-2xl overflow-hidden mb-4 border border-[#eadfd4] bg-[#f4ece1] flex items-center justify-center">
-                  <?php if (!empty($resto['image_url'])): ?>
-                    <img src="<?= e($resto['image_url']) ?>" alt="<?= e($restoName) ?>" class="w-full h-full object-cover">
+                  <?php $restoImg = api_resto_image($resto['image_url'] ?? '', $restoId); ?>
+                  <?php if ($restoImg !== ''): ?>
+                    <img src="<?= e($restoImg) ?>" alt="<?= e($restoName) ?>" class="w-full h-full object-cover">
                   <?php else: ?>
                     <svg class="w-14 h-14 text-[#c9a98a]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M3 9.75L12 4l9 5.75V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.75z"/>

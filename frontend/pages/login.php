@@ -84,7 +84,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <div class="mb-5 p-3 rounded-xl bg-[#efe0d5] border border-[#decbbd] text-[#5e392e] text-xs text-center">
-            Demo: <strong>admin@reservasi.local</strong> / kata sandi <strong>password</strong>
+            Demo: <strong>admin@reservasi.local</strong> / kata sandi <strong>password</strong><br>
+            Demo: <strong>staff@reservasi.local</strong> / kata sandi <strong>password</strong><br>
+            Demo: <strong>budi.santoso@example.com</strong> / kata sandi <strong>password</strong>
         </div>
 
         <form action="<?= route('login') ?>" method="POST" class="space-y-5">

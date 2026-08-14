@@ -95,6 +95,7 @@ $routeMap = [
     'dashboard'          => 'dashboard_user.php',
     'galeri'             => 'galeri.php',
     'menu'               => 'menu.php',
+    'menu_view'          => 'menu_view.php',
     'story'              => 'story.php',
     'reservasi'          => 'reservasi.php',
     'reservations'       => 'reservasi.php',
@@ -127,7 +128,7 @@ $routeMap = [
 
 // 6. Proteksi Akses (Auth Guard)
 $authRequiredPages = [
-    'dashboard', 'reservasi', 'reservations', 'reservation-form', 'proses_reservasi',
+    'dashboard', 'menu_view', 'reservasi', 'reservations', 'reservation-form', 'proses_reservasi',
     'pembayaran', 'pilih_meja', 'sukses_reservasi', 'riwayat_reservasi',
     'dashboard_staff', 'denah_meja', 'jadwal_hari_ini', 'checkin', 'walkin',
     'dashboard_admin', 'kelola_meja', 'kelola_menu', 'kelola_restoran',

@@ -25,6 +25,7 @@ RUN apk add --no-cache \
         bcmath \
         intl \
         pdo_sqlite \
+        pdo_mysql \
         zip
 
 COPY . .

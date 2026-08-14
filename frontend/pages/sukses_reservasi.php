@@ -48,9 +48,9 @@ $qrPayload = json_encode([
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">Confirmed</span>
                     </div>
 
-                    <!-- QR Code (Canvas digambar via JS) -->
+                    <!-- QR Code (digambar via library qrcodejs lokal) -->
                     <div class="mx-auto w-48 h-48 bg-white border border-[#eadfd4] rounded-2xl p-2">
-                        <canvas id="qr-canvas" class="w-full h-full" width="180" height="180"></canvas>
+                        <div id="qr-wrap" class="w-full h-full flex items-center justify-center"></div>
                     </div>
                     <p class="text-xs text-[#66574b]">Staf akan memindai QR ini saat check-in.</p>
                 </div>
@@ -68,14 +68,19 @@ $qrPayload = json_encode([
         </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="assets/js/qrcode.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const canvas = document.getElementById("qr-canvas");
+    const qrWrap = document.getElementById("qr-wrap");
     const payload = <?= json_encode($qrPayload) ?>;
-    if (window.QRCode) {
-        QRCode.toCanvas(canvas, payload, { width: 180, margin: 2 }, function (error) {
-            if (error) console.error(error);
+    if (window.QRCode && qrWrap) {
+        new QRCode(qrWrap, {
+            text: payload,
+            width: 180,
+            height: 180,
+            colorDark: "#201913",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
         });
     }
 });

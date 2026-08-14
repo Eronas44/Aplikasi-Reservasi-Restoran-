@@ -1,5 +1,5 @@
 <?php
-// pages/kelola_staf.php — Kelola Akun Staf / Resepsionis (Admin)
+// pages/kelola_staf.php — Kelola Akun Staf (Admin)
 // Terhubung ke backend: GET/POST /users (role:admin)
 
 $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
@@ -104,7 +104,7 @@ if ($usersResult['ok']) {
                 <div class="border-b border-[#eadfd4] pb-6">
                     <span class="text-xs uppercase tracking-widest text-[#8a5d49] font-bold">Manajemen Tim</span>
                     <h1 class="font-display text-3xl font-bold text-[#201913] mt-1">Kelola Akun Staf</h1>
-                    <p class="text-sm text-[#66574b] mt-1">Tambah atau nonaktifkan akun staf / resepsionis.</p>
+                    <p class="text-sm text-[#66574b] mt-1">Tambah atau nonaktifkan akun staf.</p>
                 </div>
 
                 <?php if ($message !== ''): ?>
@@ -138,7 +138,6 @@ if ($usersResult['ok']) {
                             <label class="block text-xs font-bold uppercase tracking-wider text-[#8a5d49] mb-2">Role</label>
                             <select name="staff_role" class="w-full px-4 py-3 rounded-xl border border-[#eadfd4] bg-white text-sm outline-none focus:border-[#8a5d49] transition">
                                 <option value="staff">Staff</option>
-                                <option value="staff">Resepsionis</option>
                             </select>
                         </div>
                     </div>

@@ -144,6 +144,7 @@ $jadwalHariIni = array_slice($jadwalHariIni, 0, 6);
                             <tr class="border-b border-[#eadfd4] text-[#8a5d49] text-xs uppercase tracking-wider">
                                 <th class="py-3 pr-4">Waktu</th>
                                 <th class="py-3 pr-4">Nama</th>
+                                <th class="py-3 pr-4">Restoran</th>
                                 <th class="py-3 pr-4">Tamu</th>
                                 <th class="py-3 pr-4">Meja</th>
                                 <th class="py-3 pr-4">Status</th>
@@ -154,6 +155,7 @@ $jadwalHariIni = array_slice($jadwalHariIni, 0, 6);
                                 <tr class="border-b border-[#eadfd4]">
                                     <td class="py-3 pr-4 font-bold text-[#201913]"><?= e(substr((string) ($j['reservation_time'] ?? ''), 0, 5)) ?></td>
                                     <td class="py-3 pr-4"><?= e($j['user']['name'] ?? 'Tamu') ?></td>
+                                    <td class="py-3 pr-4 font-bold text-[#8a5d49]"><?= e($j['table']['restaurant']['name'] ?? '-') ?></td>
                                     <td class="py-3 pr-4"><?= e((int) ($j['number_of_guest'] ?? 0)) ?> org</td>
                                     <td class="py-3 pr-4 font-bold text-[#8a5d49]"><?= e($j['table']['table_number'] ?? '-') ?></td>
                                     <td class="py-3 pr-4">
@@ -170,7 +172,7 @@ $jadwalHariIni = array_slice($jadwalHariIni, 0, 6);
                             <?php endforeach; ?>
                             <?php if (empty($jadwalHariIni)): ?>
                                 <tr>
-                                    <td colspan="5" class="py-6 text-center text-sm text-[#8a5d49]">Tidak ada jadwal reservasi hari ini</td>
+                                    <td colspan="6" class="py-6 text-center text-sm text-[#8a5d49]">Tidak ada jadwal reservasi hari ini</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>

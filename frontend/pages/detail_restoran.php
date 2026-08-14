@@ -43,7 +43,7 @@ $restoAddr   = $currentResto['address'] ?? '';
 $restoPhone  = $currentResto['phone'] ?? '';
 $restoEmail  = $currentResto['email'] ?? '';
 $restoRating = $currentResto['rating'] ?? '5.0';
-$restoImg    = !empty($currentResto['image_url']) ? api_image_url($currentResto['image_url']) : '';
+$restoImg    = api_resto_image($currentResto['image_url'] ?? '', $restoId);
 $tableCount  = isset($currentResto['tables_count']) ? (int) $currentResto['tables_count'] : count($currentResto['tables'] ?? []);
 $menuCount   = isset($currentResto['menus_count']) ? (int) $currentResto['menus_count'] : 0;
 
@@ -148,7 +148,7 @@ $hoursText = array_slice($hoursText, 0, 7);
       <a href="<?= route('reservasi', ['resto' => $restoId]) ?>" class="bg-[#5e392e] hover:bg-[#4a2c24] text-white text-xs font-bold py-3 px-8 rounded-xl transition shadow-sm">
         Pilih Tanggal & Waktu Kunjungan →
       </a>
-      <a href="<?= route('menu', ['resto' => $restoId]) ?>" class="px-5 py-3 rounded-xl border border-[#eadfd4] text-stone-600 hover:bg-stone-50 text-xs font-bold transition">
+      <a href="<?= route('menu_view', ['resto' => $restoId]) ?>" class="px-5 py-3 rounded-xl border border-[#eadfd4] text-stone-600 hover:bg-stone-50 text-xs font-bold transition">
         Lihat Menu
       </a>
     </div>

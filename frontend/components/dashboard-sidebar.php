@@ -13,7 +13,7 @@ $customerMenu = [
     'dashboard'         => ['Dashboard', 'home'],
     'preview_restoran'  => ['Preview Restoran', 'dashboard'],
     'riwayat_reservasi' => ['Riwayat Reservasi', 'riwayat_reservasi'],
-    'menu'              => ['Menu', 'menu'],
+    'menu_view'         => ['Menu', 'menu'],
 ];
 
 $staffMenu = [

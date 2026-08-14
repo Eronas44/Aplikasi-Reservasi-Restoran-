@@ -22,6 +22,28 @@ $scannedData   = null;
 
 $inputKode = trim($_POST['kode_booking'] ?? ($_GET['kode'] ?? ''));
 
+// Hasil scan QR berupa payload JSON ({kode_booking, nama, tanggal, waktu}).
+// Jika input adalah JSON, ambil kode booking di dalamnya.
+if (($decoded = json_decode($inputKode, true)) && is_array($decoded) && !empty($decoded['kode_booking'])) {
+    $inputKode = trim((string) $decoded['kode_booking']);
+}
+
+// Reservasi contoh untuk tombol "Simulasikan Scan" (pakai data nyata)
+$samplePayload = null;
+$sampleRes = api_get(API_RESERVATIONS . '?limit=1');
+if ($sampleRes['ok']) {
+    $sraw = $sampleRes['data']['data'] ?? [];
+    $sres = ($sraw['data'] ?? $sraw)[0] ?? [];
+    if (!empty($sres['booking_code'])) {
+        $samplePayload = json_encode([
+            'kode_booking' => $sres['booking_code'],
+            'nama'         => $sres['user']['name'] ?? 'Tamu',
+            'tanggal'      => $sres['reservation_date'] ?? '',
+            'waktu'        => $sres['reservation_time'] ?? '',
+        ], JSON_UNESCAPED_UNICODE);
+    }
+}
+
 if (($inputKode !== '') && ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['kode']))) {
     $found = null;
     $resResult = api_get(API_RESERVATIONS . '?limit=200');
@@ -129,10 +151,10 @@ if (($inputKode !== '') && ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM17 14h3v3h-3zM14 17h2v3h-2zM19 17h1v1h-1zM9 9h2v2H9zM13 9h2v2h-2z"/>
                             </svg>
                         </div>
-                        <p class="text-xs text-[#66574b]">Arahkan kamera perangkat ke QR code tamu (simulasi — koneksikan dengan library scanner pada produksi).</p>
-                        <a href="<?= route('checkin', ['kode' => 'KB-000005']) ?>"
+                        <p class="text-xs text-[#66574b]">Arahkan kamera perangkat ke QR code tamu. Hasil scan (payload JSON berisi kode booking) otomatis dikenali saat check-in.</p>
+                        <a href="<?= route('checkin', ['kode' => $samplePayload ?? 'KB-000001']) ?>"
                            class="inline-block px-5 py-2.5 rounded-xl border border-[#eadfd4] text-stone-600 hover:bg-stone-50 text-xs font-bold transition">
-                            Simulasikan Scan
+                            Simulasikan Scan (reservasi terbaru)
                         </a>
                     </div>
 

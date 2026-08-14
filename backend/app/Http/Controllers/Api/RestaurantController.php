@@ -31,6 +31,7 @@ class RestaurantController extends Controller
     {
         return response()->json([
             'data' => Restaurant::query()
+                ->withCount(['tables', 'menus'])
                 ->with(['tables', 'openingHours', 'policies'])
                 ->findOrFail($restaurant),
         ]);

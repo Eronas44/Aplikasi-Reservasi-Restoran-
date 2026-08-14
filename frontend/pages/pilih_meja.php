@@ -163,6 +163,7 @@ $areaLabels = [
                                 <button type="submit" name="go_menu" value="1" class="bg-[#5e392e] hover:bg-[#4a2c24] text-white text-xs font-bold py-2.5 px-6 rounded-xl transition shadow-sm">
                                     Lanjut: Pilih Menu →
                                 </button>
+                                <p class="text-xs text-[#8a5d49] font-bold self-center">atau</p>
                                 <button type="submit" class="px-5 py-2.5 rounded-xl border border-[#8a5d49] text-[#8a5d49] hover:bg-[#8a5d49] hover:text-white text-xs font-bold transition">
                                     Lewati Pre-order
                                 </button>

@@ -421,70 +421,34 @@ class RestaurantReservationSeeder extends Seeder
             }
         }
 
-        // Create demo reservations from fallback data
-        $today = date('Y-m-d');
-        $demoReservations = [
-            [
-                'user_id' => $createdCustomers[0]->user_id, // Budi Santoso
-                'table_id' => 12, // T12
-                'reservation_date' => $today,
-                'reservation_time' => '12:00',
-                'number_of_guest' => 4,
-                'status' => 'confirmed',
-                'booking_code' => 'KB-000001',
-            ],
-            [
-                'user_id' => $createdCustomers[1]->user_id, // Siti Rahma
-                'table_id' => 5, // T05
-                'reservation_date' => $today,
-                'reservation_time' => '12:30',
-                'number_of_guest' => 2,
-                'status' => 'confirmed',
-                'booking_code' => 'KB-000002',
-            ],
-            [
-                'user_id' => $createdCustomers[2]->user_id, // Andi Wijaya
-                'table_id' => 8, // T08
-                'reservation_date' => $today,
-                'reservation_time' => '13:00',
-                'number_of_guest' => 6,
-                'status' => 'pending',
-                'booking_code' => 'KB-000003',
-            ],
-            [
-                'user_id' => $createdCustomers[3]->user_id, // Rina Kartika
-                'table_id' => 11, // T11
-                'reservation_date' => $today,
-                'reservation_time' => '18:00',
-                'number_of_guest' => 8,
-                'status' => 'confirmed',
-                'booking_code' => 'KB-000005',
-            ],
-            [
-                'user_id' => $createdCustomers[4]->user_id, // Bima Pratama
-                'table_id' => 10, // T10
-                'reservation_date' => $today,
-                'reservation_time' => '19:00',
-                'number_of_guest' => 5,
-                'status' => 'confirmed',
-                'booking_code' => 'KB-000007',
-            ],
-            [
-                'user_id' => $createdCustomers[5]->user_id, // Dewi Lestari
-                'table_id' => 7, // T07
-                'reservation_date' => date('Y-m-d', strtotime($today . ' +1 day')),
-                'reservation_time' => '13:00',
-                'number_of_guest' => 3,
-                'status' => 'cancelled',
-                'booking_code' => 'KB-0005',
-            ],
-        ];
+        // Create demo reservations — setiap akun demo mendapat beberapa
+        // riwayat reservasi (tanggal & status berbeda) agar halaman riwayat
+        // terlihat terisi untuk semua akun demo.
+        $demoBookingNo = 0;
+        foreach ($createdCustomers as $ci => $customer) {
+            // 4 riwayat per akun demo: 2 selesai di masa lalu, 1 dibatalkan,
+            // 1 confirmed untuk masa depan.
+            $history = [
+                ['days' => -30, 'status' => 'completed'],
+                ['days' => -15, 'status' => 'no_show'],
+                ['days' => -3,  'status' => 'cancelled'],
+                ['days' => 7,   'status' => 'confirmed'],
+            ];
 
-        foreach ($demoReservations as $resData) {
-            Reservation::query()->create(array_merge($resData, [
-                'total_price' => 0,
-                'deposit_amount' => 0,
-            ]));
+            foreach ($history as $k => $h) {
+                $demoBookingNo++;
+                Reservation::query()->create([
+                    'user_id'          => $customer->user_id,
+                    'table_id'         => (($ci * 4 + $k) % 64) + 1,
+                    'booking_code'     => 'KB-' . str_pad((string) (100 + $demoBookingNo), 6, '0', STR_PAD_LEFT),
+                    'reservation_date' => date('Y-m-d', strtotime($h['days'] . ' days')),
+                    'reservation_time' => sprintf('%02d:%02d:00', 11 + ($ci + $k) % 9, ($ci * 10 + $k * 15) % 60),
+                    'number_of_guest'  => 2 + (($ci + $k) % 6),
+                    'total_price'      => 0,
+                    'deposit_amount'   => 0,
+                    'status'           => $h['status'],
+                ]);
+            }
         }
 
         // Additional random reservations
@@ -512,6 +476,7 @@ class RestaurantReservationSeeder extends Seeder
         });
 
         // Seed waiting list data (from walkin.php fallback)
+        $today = date('Y-m-d');
         $waitingListData = [
             ['Bayu Saputra', null, 4, 'outdoor', $today . ' 10:15:00'],
             ['Indah Permata', null, 6, 'vip', $today . ' 10:30:00'],

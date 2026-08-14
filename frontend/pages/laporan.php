@@ -122,8 +122,8 @@ $maxCount = max(1, max(array_column($chartDays, 'count')));
                         <p class="text-sm text-[#66574b] mt-1">Ringkasan performa berdasarkan data reservasi & pembayaran (FR-012).</p>
                     </div>
                     <div class="flex gap-2">
-                        <a href="#" onclick="alert('Export PDF berhasil diunduh (simulasi).')" class="px-4 py-2 rounded-xl bg-[#5e392e] hover:bg-[#4a2c24] text-white text-xs font-bold transition shadow-sm">Export PDF</a>
-                        <a href="#" onclick="alert('Export Excel berhasil diunduh (simulasi).')" class="px-4 py-2 rounded-xl border border-[#eadfd4] text-stone-600 hover:bg-stone-50 text-xs font-bold transition">Export Excel</a>
+                        <a href="export_laporan.php?type=pdf&from=<?= urlencode($filterFrom) ?>&to=<?= urlencode($filterTo) ?>" class="px-4 py-2 rounded-xl bg-[#5e392e] hover:bg-[#4a2c24] text-white text-xs font-bold transition shadow-sm">Export PDF</a>
+                        <a href="export_laporan.php?type=excel&from=<?= urlencode($filterFrom) ?>&to=<?= urlencode($filterTo) ?>" class="px-4 py-2 rounded-xl border border-[#eadfd4] text-stone-600 hover:bg-stone-50 text-xs font-bold transition">Export Excel</a>
                     </div>
                 </div>
 

@@ -50,7 +50,7 @@ if (!function_exists('api_resto_image')) {
             return api_image_url($path);
         }
         $defaults = ['RestoA.jpg', 'ViewrestoB.jpg', 'ViewRestoC.jpg', 'ViewRestoD.jpg'];
-        $idx = ((int) $restoId % count($defaults));
+        $idx = (((int) $restoId - 1) % count($defaults));
         return '/assets/images/Resto/' . $defaults[$idx];
     }
 }
