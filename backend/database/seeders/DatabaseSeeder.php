@@ -14,9 +14,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Snapshot persis database saat ini (menggantikan pembuatan data demo).
+        // Seeder legacy (RestaurantReservationSeeder / RestaurantPaymentMethodSeeder)
+        // tetap tersedia dan bisa dijalankan manual via --class jika dibutuhkan.
         $this->call([
-            RestaurantReservationSeeder::class,
-            RestaurantPaymentMethodSeeder::class,
+            DatabaseDumpSeeder::class,
         ]);
     }
 }
