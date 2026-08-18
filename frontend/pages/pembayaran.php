@@ -52,6 +52,7 @@ foreach ($cart as $cid => $c) {
 // Kebijakan deposit dari restoran (melalui endpoint publik detail restoran)
 $depositPercent = 20;
 $depositMin = 50000;
+$bankConfig = null; // konfigurasi merchant transfer BCA per restoran
 $detail = api_get(API_RESTAURANTS . '/' . $restoId);
 if ($detail['ok']) {
     $resto = $detail['data']['data'] ?? [];
@@ -62,11 +63,21 @@ if ($detail['ok']) {
             break;
         }
     }
+    foreach (($resto['payment_methods'] ?? []) as $pm) {
+        if (($pm['method'] ?? '') === 'bank_transfer' && !empty($pm['is_active'])) {
+            $bankConfig = $pm;
+            break;
+        }
+    }
 }
 $totalEstimasi = $totalPreOrder; // kenaikan via pre-order; tanpa pre-order = 0
-$depositNominal = $totalEstimasi > 0
+
+// Deposit dasar (20% dari pre-order). Bayar di Restoran memakai nilai ini;
+// pembayaran online dikenai deposit minimum restoran.
+$depositBase = $totalEstimasi > 0
     ? max($depositMin, (int) round($totalEstimasi * $depositPercent / 100))
     : 0;
+$depositOnline = max($depositBase, $depositMin);
 
 $error = '';
 $bayarTerpilih = '';
@@ -83,10 +94,93 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bookingCode = 'KB-' . strtoupper(bin2hex(random_bytes(3)));
         $waktu = date('H:i:s', strtotime($data['waktu']));
 
-        // Total nominal yang dibayar: deposit (pre-order) DITAMBAH deposit meja minimum.
-        // Agar alur jamak, pembayaran pertama = deposit meja (jika tanpa pre-order),
-        // atau deposit 20% dari total pre-order bila ada pesanan.
-        $payNow = $depositNominal;
+        // Bayar di Restoran = deposit dasar (boleh Rp 0 bila tanpa pre-order);
+        // metode online dikenakan deposit minimum restoran.
+        $payNow = $bayarTerpilih === 'cod' ? $depositBase : $depositOnline;
+
+        // Detail pembayaran per metode
+        $paymentDetails = $bayarTerpilih === 'bank_transfer'
+            ? [
+                'bank' => 'BCA',
+                'account_name' => $bankConfig['account_name'] ?? 'Kafiber Resto',
+            ]
+            : null;
+
+        $payData = [
+            'amount'           => round($payNow, 2),
+            'method'           => $metodeApiMap[$bayarTerpilih] ?? 'bank_transfer',
+            'gateway'          => $bayarTerpilih === 'qris' ? 'qris' : ($bayarTerpilih === 'ewallet' ? 'ewallet' : 'bank'),
+            'va_number'        => $bayarTerpilih === 'bank_transfer' ? ($bankConfig['account_number'] ?? null) : null,
+            'payment_details'  => $paymentDetails,
+            'expires_at'       => $bayarTerpilih === 'cod' ? date('Y-m-d H:i:s', strtotime('+2 hours')) : null,
+        ];
+
+        // Cek reservasi pending milik sendiri pada slot yang sama (mis. saat
+        // pelanggan "Kembali ke Review" lalu mengganti metode pembayaran).
+        // Bila ada, gunakan kembali agar tidak menabrak unique slot (409).
+        $existingId    = (int) ($_SESSION['current_reservation']['reservation_id'] ?? 0);
+        $existingPayId = (int) ($_SESSION['current_reservation']['payment_id'] ?? 0);
+        $reuseId = 0;
+        $existingResData = [];
+        if ($existingId > 0) {
+            $chk = api_get(API_RESERVATIONS . '/' . $existingId);
+            if ($chk['ok']) {
+                $existingResData = $chk['data']['data'] ?? [];
+                $sameSlot = (int) ($existingResData['table_id'] ?? 0) === (int) $meja['table_id']
+                    && substr((string) ($existingResData['reservation_date'] ?? ''), 0, 10) === $data['tanggal']
+                    && substr((string) ($existingResData['reservation_time'] ?? ''), 0, 5) === substr($waktu, 0, 5);
+                if ($sameSlot && in_array($existingResData['status'] ?? '', ['pending', 'confirmed'], true)) {
+                    $reuseId = $existingId;
+                }
+            }
+        }
+
+        if ($reuseId > 0) {
+            // === GUNAKAN KEMBALI reservasi yang sudah ada (hindari duplikat slot) ===
+            $reservationId = $reuseId;
+
+            // Item pre-order hanya dibuat bila reservasi belum punya item
+            if (!empty($cartItems) && empty($existingResData['items'] ?? [])) {
+                foreach ($cartItems as $item) {
+                    api_post(API_RESERVATION_ITEMS, [
+                        'reservation_id' => $reservationId,
+                        'menu_id'        => $item['menu_id'],
+                        'quantity'       => $item['qty'],
+                        'subtotal_price' => round($item['subtotal'], 2),
+                    ]);
+                }
+            }
+
+            // Perbarui metode pembayaran bila payment pending masih ada; jika
+            // sudah sukses (tidak bisa diubah), buat catatan pembayaran baru.
+            $paymentId = 0;
+            if ($existingPayId > 0) {
+                $upd = api_request('PUT', API_PAYMENTS . '/' . $existingPayId, $payData);
+                if ($upd['ok']) {
+                    $paymentId = $existingPayId;
+                }
+            }
+            if ($paymentId === 0) {
+                $payResult = api_post(API_PAYMENTS, array_merge([
+                    'reservation_id'   => $reservationId,
+                    'type'             => 'deposit',
+                    'status'           => 'pending',
+                    'transaction_code' => $bookingCode . '-DP',
+                ], $payData));
+                $paymentId = (int) ($payResult['data']['data']['payment_id'] ?? 0);
+            }
+
+            $_SESSION['current_reservation']['kode_booking']   = $existingResData['booking_code'] ?? $bookingCode;
+            $_SESSION['current_reservation']['reservation_id'] = $reservationId;
+            $_SESSION['current_reservation']['payment_id']     = $paymentId;
+            $_SESSION['current_reservation']['payment_method'] = $bayarTerpilih;
+            $_SESSION['current_reservation']['payment_status'] = 'pending';
+            $_SESSION['current_reservation']['total']          = $totalEstimasi;
+            $_SESSION['current_reservation']['deposit']        = $payNow;
+
+            header('Location: ' . route('instruksi_pembayaran'));
+            exit;
+        }
 
         $payload = [
             'user_id'          => (int) ($_SESSION['user_id'] ?? 0),
@@ -97,7 +191,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'number_of_guest'  => $jumlahTamu,
             'total_price'      => round($totalEstimasi, 2),
             'deposit_amount'   => round($payNow, 2),
-            'status'           => 'confirmed',
+            'status'           => 'pending',
+            'payment_status'   => 'unpaid',
             'special_request'  => ($data['catatan'] ?? '-') !== '-' ? $data['catatan'] : null,
         ];
 
@@ -121,25 +216,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            // Catat pembayaran deposit (ketika total > 0 / metode selain langsung)
-            if ($reservationId > 0 && $payNow > 0) {
-                api_post(API_PAYMENTS, [
+            // Catat pembayaran deposit (status pending sampai diverifikasi backend).
+            $paymentId = 0;
+            if ($reservationId > 0) {
+                $payResult = api_post(API_PAYMENTS, array_merge([
                     'reservation_id'   => $reservationId,
                     'type'             => 'deposit',
-                    'amount'           => round($payNow, 2),
-                    'method'           => $metodeApiMap[$bayarTerpilih] ?? 'bank_transfer',
+                    'status'           => 'pending',
                     'transaction_code' => $bookingCode . '-DP',
-                    'gateway'          => $bayarTerpilih === 'qris' ? 'qris' : ($bayarTerpilih === 'ewallet' ? 'ewallet' : 'bank'),
-                ]);
+                ], $payData));
+                $paymentId = (int) ($payResult['data']['data']['payment_id'] ?? 0);
             }
 
             // Simpan data sukses ke session
             $_SESSION['current_reservation']['kode_booking']   = $bookingCode;
             $_SESSION['current_reservation']['reservation_id'] = $reservationId;
+            $_SESSION['current_reservation']['payment_id']     = $paymentId;
+            $_SESSION['current_reservation']['payment_method'] = $bayarTerpilih;
+            $_SESSION['current_reservation']['payment_status'] = 'pending';
             $_SESSION['current_reservation']['total']          = $totalEstimasi;
             $_SESSION['current_reservation']['deposit']        = $payNow;
 
-            header('Location: ' . route('sukses_reservasi'));
+            header('Location: ' . route('instruksi_pembayaran'));
             exit;
         }
     }
@@ -254,15 +352,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="flex justify-between text-sm text-[#4f4338]">
                             <span>Deposit <?= (int) $depositPercent ?>%</span>
-                            <span class="font-bold text-[#8a5d49]">Rp <?= number_format($depositNominal, 0, ',', '.') ?></span>
+                            <span class="font-bold text-[#8a5d49]">Rp <span id="deposit-value"><?= number_format($depositBase, 0, ',', '.') ?></span></span>
                         </div>
                         <div class="flex justify-between border-t border-[#eadfd4] pt-3 font-bold text-[#201913]">
                             <span>Total yang Dibayar Sekarang</span>
-                            <span>Rp <?= number_format($depositNominal, 0, ',', '.') ?></span>
+                            <span>Rp <span id="paynow-value"><?= number_format($depositBase, 0, ',', '.') ?></span></span>
                         </div>
-                        <?php if ($totalEstimasi <= 0): ?>
-                            <p class="text-xs text-[#8a5d49]">Tanpa pre-order, deposit Rp 0. Anda dapat membayar langsung di restoran.</p>
-                        <?php endif; ?>
+                        <p id="deposit-note" class="text-xs text-[#8a5d49]">
+                            <?php if ($totalEstimasi <= 0): ?>
+                                Tanpa pre-order, Bayar di Restoran tidak dikenakan deposit. Metode online dikenakan deposit minimum Rp <?= number_format($depositMin, 0, ',', '.') ?>.
+                            <?php else: ?>
+                                Bayar di Restoran memakai deposit <?= (int) $depositPercent ?>% dari total; metode online dikenakan minimal Rp <?= number_format($depositMin, 0, ',', '.') ?>.
+                            <?php endif; ?>
+                        </p>
                     </div>
 
                     <div class="pt-4 flex items-center justify-end gap-3 border-t border-[#eadfd4]">
@@ -277,3 +379,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const depositBase = <?= (int) $depositBase ?>;
+    const depositOnline = <?= (int) $depositOnline ?>;
+    const fmt = n => "Rp " + n.toLocaleString("id-ID");
+    const radios = document.querySelectorAll('input[name="metode_bayar"]');
+
+    function refresh() {
+        const isCod = document.querySelector('input[name="metode_bayar"]:checked')?.value === "cod";
+        const val = isCod ? depositBase : depositOnline;
+        document.getElementById("deposit-value").textContent = fmt(val);
+        document.getElementById("paynow-value").textContent = fmt(val);
+    }
+    radios.forEach(r => r.addEventListener("change", refresh));
+    refresh();
+});
+</script>

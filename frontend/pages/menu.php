@@ -23,20 +23,12 @@ if ($detail['ok']) {
     $restoNama = $detail['data']['data']['name'] ?? $restoNama;
 }
 
-// Daftar restoran untuk dropdown pilihan
-$restoList = [];
-$restoListResult = api_get(API_RESTAURANTS . '?limit=100');
-if ($restoListResult['ok']) {
-    $raw = $restoListResult['data']['data'] ?? [];
-    $restoList = $raw['data'] ?? (is_array($raw) && isset($raw[0]) ? $raw : []);
-}
-
 // ---- Keranjang (session) ----
 $cart = $_SESSION['cart'] ?? [];
 
 // Keranjang pre-order hanya berlaku untuk satu restoran. Jika restoran
-// diganti via dropdown, kosongkan keranjang agar item dari restoran lain
-// tidak terbawa ke transaksi.
+// berbeda dari yang ada di keranjang, kosongkan keranjang agar item dari
+// restoran lain tidak terbawa ke transaksi.
 $cartResto = (int) ($_SESSION['cart_resto'] ?? 0);
 if ($cartResto !== 0 && $cartResto !== $restoId) {
     $_SESSION['cart'] = [];
@@ -120,19 +112,11 @@ foreach ($cart as $c) {
                     <a href="<?= route('pilih_meja') ?>" class="text-xs font-bold text-[#8a5d49] hover:underline">← Ubah Meja</a>
                 </div>
 
-                <!-- Pilih Restoran (menu mengikuti restoran yang dipilih) -->
-                <form method="GET" action="index.php" onchange="this.submit()" class="bg-[#fcfaf7] border border-[#eadfd4] rounded-2xl p-4 flex flex-col md:flex-row md:items-center gap-4">
-                    <input type="hidden" name="page" value="menu">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-[#8a5d49]">Restoran</label>
-                    <select name="resto" class="flex-1 px-4 py-2.5 rounded-xl border border-[#eadfd4] bg-white text-sm text-[#201913] outline-none focus:border-[#8a5d49] transition">
-                        <?php foreach ($restoList as $r): ?>
-                            <option value="<?= (int) ($r['restaurant_id'] ?? 0) ?>" <?= (int) ($r['restaurant_id'] ?? 0) === $restoId ? 'selected' : '' ?>>
-                                <?= e($r['name'] ?? 'Restoran') ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <span class="text-xs text-[#66574b]">Halaman ini akan memuat daftar menu restoran terpilih.</span>
-                </form>
+                <!-- Restoran Terpilih (dipilih di tahap reservasi) -->
+                <div class="bg-[#fcfaf7] border border-[#eadfd4] rounded-2xl p-4 flex items-center gap-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#8a5d49] shrink-0">Restoran</span>
+                    <span class="text-sm font-bold text-[#201913]"><?= e($restoNama) ?></span>
+                </div>
 
                 <?php if (empty($menusByCategory)): ?>
                     <div class="text-center py-12">

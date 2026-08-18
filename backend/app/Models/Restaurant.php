@@ -47,4 +47,9 @@ class Restaurant extends Model
     {
         return $this->hasMany(Policy::class, 'restaurant_id', 'restaurant_id');
     }
+
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(RestaurantPaymentMethod::class, 'restaurant_id', 'restaurant_id');
+    }
 }

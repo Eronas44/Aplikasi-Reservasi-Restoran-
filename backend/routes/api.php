@@ -24,6 +24,10 @@ Route::prefix('v1')
         Route::get('/restaurants', [RestaurantController::class, 'index']);
         Route::get('/restaurants/{restaurant}', [RestaurantController::class, 'show']);
 
+        // Webhook callback gateway pembayaran (publik, dilindungi token
+        // X-Payment-Token = PAYMENT_WEBHOOK_TOKEN). Dinonaktifkan bila token kosong.
+        Route::post('/payments/{payment}/callback', [PaymentController::class, 'callback']);
+
         Route::middleware('auth')->group(function (): void {
             Route::get('/auth/me', [AuthController::class, 'me']);
             Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -42,6 +46,11 @@ Route::prefix('v1')
 
             // Pelanggan dapat mencatat pembayaran deposit/pre-order sendiri
             Route::post('/payments', [PaymentController::class, 'store']);
+            // Instruksi pembayaran & verifikasi (simulasi) untuk pelanggan
+            Route::get('/payments/{payment}/instructions', [PaymentController::class, 'instructions']);
+            Route::post('/payments/{payment}/verify', [PaymentController::class, 'verify']);
+            // Ubah metode pembayaran yang masih pending (re-submit dari Review)
+            Route::put('/payments/{payment}', [PaymentController::class, 'update']);
 
             Route::apiResource('reservations', ReservationController::class)
                 ->except(['destroy']);

@@ -20,11 +20,17 @@ class Payment extends Model
         'status',
         'transaction_code',
         'gateway',
+        'va_number',
+        'phone_number',
+        'payment_details',
+        'expires_at',
         'paid_at',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'payment_details' => 'array',
+        'expires_at' => 'datetime',
         'paid_at' => 'datetime',
     ];
 

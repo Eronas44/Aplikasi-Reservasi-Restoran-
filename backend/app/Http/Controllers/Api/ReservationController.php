@@ -83,6 +83,28 @@ class ReservationController extends Controller
             throw $exception;
         }
 
+        // Sinkronkan pembayaran "Bayar di Restoran" dengan aksi staf:
+        // kasir mengonfirmasi -> payment sukses; dibatalkan -> payment gagal.
+        $newStatus = $request->input('status');
+        if (in_array($newStatus, ['confirmed', 'cancelled'], true)) {
+            $pendingCash = $model->payments()
+                ->where('method', 'cash')
+                ->where('status', 'pending')
+                ->first();
+
+            if ($pendingCash) {
+                if ($newStatus === 'confirmed') {
+                    $pendingCash->update([
+                        'status' => 'success',
+                        'paid_at' => $pendingCash->paid_at ?? now(),
+                    ]);
+                    $model->update(['payment_status' => 'partial']);
+                } else {
+                    $pendingCash->update(['status' => 'failed']);
+                }
+            }
+        }
+
         return response()->json([
             'message' => 'Reservation updated.',
             'data' => $model->fresh()->load(['user', 'staff', 'table.restaurant', 'items.menu']),

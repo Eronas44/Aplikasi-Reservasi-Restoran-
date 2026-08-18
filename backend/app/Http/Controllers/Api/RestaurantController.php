@@ -32,7 +32,7 @@ class RestaurantController extends Controller
         return response()->json([
             'data' => Restaurant::query()
                 ->withCount(['tables', 'menus'])
-                ->with(['tables', 'openingHours', 'policies'])
+                ->with(['tables', 'openingHours', 'policies', 'paymentMethods'])
                 ->findOrFail($restaurant),
         ]);
     }

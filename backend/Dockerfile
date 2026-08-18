@@ -31,7 +31,8 @@ RUN apk add --no-cache \
 COPY . .
 COPY --from=vendor /app/vendor ./vendor
 
-RUN chmod +x docker/entrypoint.sh \
+RUN sed -i 's/\r$//' docker/entrypoint.sh \
+    && chmod +x docker/entrypoint.sh \
     && chown -R www-data:www-data storage bootstrap/cache database
 
 EXPOSE 8000

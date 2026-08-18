@@ -1,0 +1,26 @@
+# =====================================================
+# GIT ATTRIBUTES - ATURAN LINE ENDING
+# =====================================================
+# Menjaga agar file penting selalu berakhiran LF (Linux)
+# di semua platform (Windows / macOS / Linux).
+#
+# Tanpa file ini, di Windows dengan `core.autocrlf=true`
+# git meng-checkout file sebagai CRLF. Akibatnya script
+# shell di dalam container Docker gagal dieksekusi:
+#   exec: "sh": executable file not found in $PATH
+# karena shebang (`#!/usr/bin/env sh`) berubah menjadi
+# `#!/usr/bin/env sh\r` (terkena carriage return).
+* text=auto
+
+# File yang WAJIB LF (dipakai/dieksekusi oleh Linux & Docker):
+*.sh     text eol=lf
+*.bash   text eol=lf
+*.conf   text eol=lf
+*.ini    text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+Dockerfile   text eol=lf
+Dockerfile.* text eol=lf
+.env     text eol=lf
+.env.*   text eol=lf
+*.example    text eol=lf
