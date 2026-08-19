@@ -32,8 +32,8 @@ if ($isLoggedIn) {
     <!-- MENU NAVIGASI TENGAH -->
     <?php if ($currentPage === 'home'): ?>
     <nav style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-      <a href="<?= route('login') ?>" class="nav-pill">Story/About</a>
-      <a href="<?= route('login') ?>" class="nav-pill">Menu Kuliner</a>
+      <a href="<?= route('story') ?>" class="nav-pill">Story/About</a>
+      <a href="<?= route('menu_view') ?>" class="nav-pill">Menu Kuliner</a>
       <a href="<?= route('galeri') ?>" class="nav-pill">Galeri / Suasana</a>
     </nav>
     <?php else: ?>

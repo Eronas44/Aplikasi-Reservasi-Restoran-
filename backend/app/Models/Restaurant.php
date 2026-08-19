@@ -20,12 +20,14 @@ class Restaurant extends Model
         'email',
         'rating',
         'image_url',
+        'image_urls',
         'is_active',
     ];
 
     protected $casts = [
         'rating' => 'decimal:1',
         'is_active' => 'boolean',
+        'image_urls' => 'array',
     ];
 
     public function tables(): HasMany
@@ -41,6 +43,16 @@ class Restaurant extends Model
     public function openingHours(): HasMany
     {
         return $this->hasMany(OpeningHour::class, 'restaurant_id', 'restaurant_id');
+    }
+
+    public function holidays(): HasMany
+    {
+        return $this->hasMany(Holiday::class, 'restaurant_id', 'restaurant_id');
+    }
+
+    public function shifts(): HasMany
+    {
+        return $this->hasMany(Shift::class, 'restaurant_id', 'restaurant_id');
     }
 
     public function policies(): HasMany

@@ -39,6 +39,35 @@ if (!function_exists('api_image_url')) {
     }
 }
 
+if (!function_exists('api_resto_images')) {
+    /**
+     * Daftar URL gambar restoran untuk slideshow.
+     * - Utamakan image_urls (array) dari database.
+     * - Jika kosong, fallback ke image_url tunggal.
+     * - Jika keduanya kosong, gunakan gambar default frontend
+     *   (diplih deterministik per restoran).
+     */
+    function api_resto_images($imageUrls = [], $imageUrl = '', $restoId = 0) {
+        $urls = [];
+        foreach ((array) $imageUrls as $u) {
+            $u = trim((string) $u);
+            if ($u !== '') {
+                $urls[] = api_image_url($u);
+            }
+        }
+        $imageUrl = trim((string) $imageUrl);
+        if ($imageUrl !== '' && !in_array($imageUrl, $urls, true)) {
+            array_unshift($urls, api_image_url($imageUrl));
+        }
+        if (empty($urls)) {
+            $defaults = ['RestoA.jpg', 'ViewrestoB.jpg', 'ViewRestoC.jpg', 'ViewRestoD.jpg'];
+            $idx = (((int) $restoId - 1) % count($defaults));
+            $urls[] = '/assets/images/Resto/' . $defaults[$idx];
+        }
+        return array_values($urls);
+    }
+}
+
 if (!function_exists('api_resto_image')) {
     /**
      * URL gambar restoran. Jika belum ada image_url (belum diupload),
@@ -102,6 +131,12 @@ if (!defined('API_RESTAURANTS')) {
 }
 if (!defined('API_OPENING_HOURS')) {
     define('API_OPENING_HOURS', '/opening-hours');
+}
+if (!defined('API_HOLIDAYS')) {
+    define('API_HOLIDAYS', '/holidays');
+}
+if (!defined('API_SHIFTS')) {
+    define('API_SHIFTS', '/shifts');
 }
 if (!defined('API_POLICIES')) {
     define('API_POLICIES', '/policies');

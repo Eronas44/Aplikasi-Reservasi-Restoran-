@@ -47,8 +47,22 @@ if ($result['ok']) {
                         ?>
                         <div class="bg-white/80 border border-[#eadfd4] rounded-3xl overflow-hidden shadow-sm flex flex-col hover:border-[#8a5d49] transition group">
                             <div class="w-full h-44 overflow-hidden border-b border-[#eadfd4] bg-[#f4ece1] flex items-center justify-center">
-                                <img src="<?= e($restoImg) ?>" alt="<?= e($restoName) ?>" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy">
+                            <?php
+                            $restoSlides = api_resto_images($resto['image_urls'] ?? [], $resto['image_url'] ?? '', $restoId);
+                            ?>
+                            <div class="js-slideshow relative w-full h-full" data-interval="3500">
+                                <div class="js-slideshow-track flex h-full w-full transition-transform duration-500">
+                                    <?php foreach ($restoSlides as $slide): ?>
+                                        <img src="<?= e($slide) ?>" alt="<?= e($restoName) ?>" class="js-slide w-full h-full object-cover shrink-0 group-hover:scale-105 transition duration-300" loading="lazy">
+                                    <?php endforeach; ?>
+                                </div>
+                                <?php if (count($restoSlides) > 1): ?>
+                                    <button type="button" class="js-slideshow-prev absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full bg-black/35 text-white text-sm hover:bg-black/55 transition" aria-label="Gambar sebelumnya">&#8249;</button>
+                                    <button type="button" class="js-slideshow-next absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full bg-black/35 text-white text-sm hover:bg-black/55 transition" aria-label="Gambar berikutnya">&#8250;</button>
+                                    <div class="js-slideshow-dots absolute bottom-2 inset-x-0 flex items-center justify-center gap-1.5"></div>
+                                <?php endif; ?>
                             </div>
+                        </div>
 
                             <div class="p-5 flex flex-col flex-1 gap-3">
                                 <div>

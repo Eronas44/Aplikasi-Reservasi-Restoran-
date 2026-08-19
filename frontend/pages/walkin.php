@@ -126,7 +126,7 @@ if ($waitResult['ok']) {
             <div class="bg-white/90 border border-[#eadfd4] rounded-3xl p-8 md:p-10 shadow-sm space-y-4">
                 <h2 class="font-display text-2xl font-bold text-[#201913]">Waiting List Saat Ini</h2>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-[#4f4338]">
+                    <table data-paginate class="w-full text-sm text-left text-[#4f4338]">
                         <thead>
                             <tr class="border-b border-[#eadfd4] text-[#8a5d49] text-xs uppercase tracking-wider">
                                 <th class="py-3 pr-4">No</th>

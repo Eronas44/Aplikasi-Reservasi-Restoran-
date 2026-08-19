@@ -13,7 +13,7 @@ $customerMenu = [
     'dashboard'         => ['Dashboard', 'home'],
     'preview_restoran'  => ['Preview Restoran', 'dashboard'],
     'riwayat_reservasi' => ['Riwayat Reservasi', 'riwayat_reservasi'],
-    'menu_view'         => ['Menu', 'menu'],
+    'menu_view'         => ['Preview Menu', 'menu'],
 ];
 
 $staffMenu = [
@@ -43,8 +43,19 @@ $menuItems = match ($sidebarRole) {
 };
 ?>
 
-<aside class="lg:col-span-1 space-y-3">
+<aside id="dashboard-sidebar" class="lg:col-span-1 space-y-3">
     <div class="bg-white/80 border border-[#eadfd4] rounded-2xl p-4 shadow-sm space-y-2">
+        <div class="flex items-center justify-between gap-2 px-2 pt-1 pb-3 mb-2 border-b border-[#eadfd4]">
+            <a href="<?= e($sidebarRole === 'customer' ? route('dashboard') : route('home')) ?>" class="flex items-center gap-3 min-w-0">
+                <img src="assets/images/kafiber.png" alt="Logo Kafiber" class="w-11 h-11 object-cover rounded-full bg-white border border-[#eadfd4]">
+                <span class="font-display italic font-bold text-lg text-[#5e392e] leading-none">Kafiber</span>
+            </a>
+            <button type="button" class="sidebar-toggle-btn" onclick="kafiberToggleSidebar()" title="Sembunyikan sidebar" aria-label="Sembunyikan sidebar">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+        </div>
         <div class="px-4 py-2 mb-1">
             <span class="text-[10px] uppercase tracking-widest font-bold text-[#8a5d49]">Menu <?= e($userRoleLabel) ?></span>
         </div>
@@ -61,7 +72,7 @@ $menuItems = match ($sidebarRole) {
                 <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <?php if ($icon === 'home'): ?>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                    <?php elseif ($icon === 'dashboard'): ?>
+                    <?php elseif ($icon === 'dashboard' || $icon === 'dashboard_staff' || $icon === 'dashboard_admin'): ?>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                     <?php elseif ($icon === 'reservasi' || $icon === 'kelola_reservasi'): ?>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -94,3 +105,112 @@ $menuItems = match ($sidebarRole) {
         <?php endforeach; ?>
     </div>
 </aside>
+
+<button type="button" id="dashboard-sidebar-show" class="sidebar-show-btn" onclick="kafiberToggleSidebar()" title="Tampilkan sidebar" aria-label="Tampilkan sidebar">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+    </svg>
+</button>
+
+<style>
+    .sidebar-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+        border-radius: 10px;
+        border: 1px solid #eadfd4;
+        background: #f4ece1;
+        color: #5e392e;
+        cursor: pointer;
+        transition: background .15s ease, transform .15s ease;
+    }
+    .sidebar-toggle-btn:hover { background: #eadfd4; }
+    .sidebar-toggle-btn:active { transform: scale(.95); }
+    .sidebar-show-btn {
+        position: fixed;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 50;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        border: 0;
+        background: #5e392e;
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 6px 16px rgba(32, 25, 19, .25);
+        transition: background .15s ease, transform .15s ease;
+    }
+    .sidebar-show-btn:hover { background: #4a2c24; }
+    .sidebar-show-btn:active { transform: translateY(-50%) scale(.95); }
+</style>
+
+<script>
+(function () {
+    function contentCol(grid) {
+        for (var i = 0; i < grid.children.length; i++) {
+            var child = grid.children[i];
+            if (child.classList && child.classList.contains('lg:col-span-3')) {
+                return child;
+            }
+        }
+        return null;
+    }
+
+    function kafiberInitSidebar() {
+        var aside = document.getElementById('dashboard-sidebar');
+        if (!aside) return;
+        var grid = aside.closest('.grid');
+        if (!grid) return;
+
+        // Kolom sidebar = child langsung grid (aside itu sendiri, atau wrapper pembungkusnya)
+        var sidebarCol = aside.parentElement === grid ? aside : aside.parentElement;
+        // Konten diambil saat seluruh dokumen sudah ter-parse (DOM ready),
+        // karena div konten berada SETELAH komponen sidebar pada HTML.
+        var content = contentCol(grid);
+        var showBtn = document.getElementById('dashboard-sidebar-show');
+
+        // Pastikan tombol "tampilkan" menjadi child langsung grid (fixed, tanpa efek layout)
+        if (showBtn && showBtn.parentElement !== grid) {
+            grid.appendChild(showBtn);
+        }
+
+        window.kafiberToggleSidebar = function () {
+            var hidden = sidebarCol.style.display === 'none';
+            sidebarCol.style.display = hidden ? '' : 'none';
+            if (content) {
+                content.style.gridColumn = hidden ? '' : '1 / -1';
+            }
+            if (showBtn) {
+                showBtn.style.display = hidden ? 'none' : 'flex';
+            }
+            try { localStorage.setItem('kafiber_sidebar_collapsed', hidden ? '0' : '1'); } catch (e) {}
+        };
+
+        var collapsed = false;
+        try { collapsed = localStorage.getItem('kafiber_sidebar_collapsed') === '1'; } catch (e) {}
+        if (collapsed) {
+            sidebarCol.style.display = 'none';
+            if (content) {
+                content.style.gridColumn = '1 / -1';
+            }
+            if (showBtn) {
+                showBtn.style.display = 'flex';
+            }
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', kafiberInitSidebar);
+    } else {
+        kafiberInitSidebar();
+    }
+})();
+</script>

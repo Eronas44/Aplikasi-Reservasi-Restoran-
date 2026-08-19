@@ -17,11 +17,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (function_exists('api_login')) {
+            // Sesi backend (cookie jar) bisa saja masih tersisa valid dari proses
+            // sebelumnya meski sesi frontend sudah logout. Bersihkan dulu agar
+            // middleware guest backend tidak meng-redirect login (302 + body kosong).
+            if (function_exists('api_reset_backend_session')) {
+                api_reset_backend_session();
+            }
+
             $result = api_login($email, $password);
 
             if ($result['ok'] && isset($result['data']['data']) && is_array($result['data']['data'])) {
                 set_frontend_session_from_user($result['data']['data']);
-                header('Location: ' . dashboard_route());
+
+                // Otomatis kembali ke halaman reservasi bila pengunjung datang dari alur reservasi
+                $redirect = $_SESSION['login_redirect'] ?? '';
+                unset($_SESSION['login_redirect']);
+                if ($redirect !== '' && strpos($redirect, 'index.php') !== false) {
+                    header('Location: ' . $redirect);
+                    exit;
+                }
+
+                // Login normal: masuk ke halaman utama dulu, baru dashboard
+                header('Location: ' . route('home'));
                 exit;
             }
 
@@ -66,8 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </svg>
         </a>
 
-        <div class="w-14 h-14 rounded-full bg-[#5e392e] text-white flex items-center justify-center font-display italic font-bold text-xl mx-auto mb-5 shadow-md">
-            K
+        <div class="w-14 h-14 rounded-full bg-white border border-[#eadfd4] flex items-center justify-center font-display italic font-bold text-xl mx-auto mb-5 shadow-md overflow-hidden">
+            <img src="assets/images/kafiber.png" alt="Logo Kafiber" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerText='K';">
         </div>
 
         <h1 class="font-display text-3xl font-semibold text-center text-[#201913] mb-1">

@@ -95,7 +95,7 @@ $statusLabels = [
           <a href="<?= route('riwayat_reservasi') ?>" class="text-xs font-bold text-[#8a5d49] hover:underline">Lihat Semua →</a>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-sm text-left text-[#4f4338]">
+          <table data-paginate class="w-full text-sm text-left text-[#4f4338]">
             <thead>
               <tr class="border-b border-[#eadfd4] text-[#8a5d49] text-xs uppercase tracking-wider">
                 <th class="py-3 pr-4">Kode</th>
@@ -152,14 +152,21 @@ $statusLabels = [
               <a href="<?= route('detail_restoran', ['resto_id' => $restoId]) ?>"
                  class="bg-white/80 border border-[#eadfd4] rounded-3xl p-5 shadow-sm flex flex-col hover:border-[#8a5d49] transition group">
                 <div class="w-full h-40 rounded-2xl overflow-hidden mb-4 border border-[#eadfd4] bg-[#f4ece1] flex items-center justify-center">
-                  <?php $restoImg = api_resto_image($resto['image_url'] ?? '', $restoId); ?>
-                  <?php if ($restoImg !== ''): ?>
-                    <img src="<?= e($restoImg) ?>" alt="<?= e($restoName) ?>" class="w-full h-full object-cover">
-                  <?php else: ?>
-                    <svg class="w-14 h-14 text-[#c9a98a]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 9.75L12 4l9 5.75V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.75z"/>
-                    </svg>
-                  <?php endif; ?>
+                  <?php
+                  $restoSlides = api_resto_images($resto['image_urls'] ?? [], $resto['image_url'] ?? '', $restoId);
+                  ?>
+                  <div class="js-slideshow relative w-full h-full" data-interval="3500">
+                    <div class="js-slideshow-track flex h-full w-full transition-transform duration-500">
+                      <?php foreach ($restoSlides as $slide): ?>
+                        <img src="<?= e($slide) ?>" alt="<?= e($restoName) ?>" class="js-slide w-full h-full object-cover shrink-0" loading="lazy">
+                      <?php endforeach; ?>
+                    </div>
+                    <?php if (count($restoSlides) > 1): ?>
+                      <button type="button" class="js-slideshow-prev absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full bg-black/35 text-white text-sm hover:bg-black/55 transition" aria-label="Gambar sebelumnya">&#8249;</button>
+                      <button type="button" class="js-slideshow-next absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full bg-black/35 text-white text-sm hover:bg-black/55 transition" aria-label="Gambar berikutnya">&#8250;</button>
+                      <div class="js-slideshow-dots absolute bottom-2 inset-x-0 flex items-center justify-center gap-1.5"></div>
+                    <?php endif; ?>
+                  </div>
                 </div>
                 <div class="flex items-start justify-between mt-auto gap-2">
                   <div>

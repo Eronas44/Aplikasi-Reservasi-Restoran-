@@ -12,6 +12,8 @@
     <!-- Favicon & Custom CSS -->
     <link rel="icon" type="image/png" href="assets/images/kafiber.png">
     <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Slideshow gambar restoran -->
+    <script src="assets/js/slideshow.js"></script>
     <style>
       .nav-pill {
         display: inline-flex;
@@ -51,6 +53,9 @@
 
     <!-- KOMPONEN FOOTER -->
     <?php include __DIR__ . '/../components/footer.php'; ?>
+
+    <!-- KOMPONEN PAGINATION TABEL -->
+    <?php include __DIR__ . '/../components/pagination.php'; ?>
 
 </body>
 </html>

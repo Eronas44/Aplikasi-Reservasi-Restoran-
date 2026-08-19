@@ -139,7 +139,7 @@ $jadwalHariIni = array_slice($jadwalHariIni, 0, 6);
                     <a href="<?= route('jadwal_hari_ini') ?>" class="text-xs font-bold text-[#8a5d49] hover:underline">Lihat Semua →</a>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-[#4f4338]">
+                    <table data-paginate class="w-full text-sm text-left text-[#4f4338]">
                         <thead>
                             <tr class="border-b border-[#eadfd4] text-[#8a5d49] text-xs uppercase tracking-wider">
                                 <th class="py-3 pr-4">Waktu</th>

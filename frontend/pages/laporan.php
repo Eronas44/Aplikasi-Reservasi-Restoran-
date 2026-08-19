@@ -20,6 +20,22 @@ if (isset($_GET['range']) && $_GET['range'] === '7d') {
     $filterFrom = date('Y-m-d');
 }
 
+// Ambil daftar restoran untuk filter
+$restaurants = [];
+$restoResult = api_get(API_RESTAURANTS . '?limit=200');
+if ($restoResult['ok']) {
+    $raw = $restoResult['data']['data'] ?? [];
+    $restaurants = $raw['data'] ?? $raw;
+}
+$restoFilter = (int) ($_GET['restaurant_id'] ?? 0);
+$selectedRestoName = 'Semua Restoran';
+foreach ($restaurants as $resto) {
+    if ((int) ($resto['restaurant_id'] ?? 0) === $restoFilter) {
+        $selectedRestoName = $resto['name'] ?? 'Restoran';
+        break;
+    }
+}
+
 // Ambil data reservasi, pembayaran, dan tabel dari backend
 $reservations = [];
 $resResult = api_get(API_RESERVATIONS . '?limit=500');
@@ -45,10 +61,16 @@ if ($tablesResult['ok']) {
     }
 }
 
-// Filter sesuai rentang tanggal
-$filtered = array_filter($reservations, function ($r) use ($filterFrom, $filterTo) {
+// Filter sesuai rentang tanggal & restoran
+$filtered = array_filter($reservations, function ($r) use ($filterFrom, $filterTo, $restoFilter) {
     $date = substr((string) ($r['reservation_date'] ?? ''), 0, 10);
-    return $date >= $filterFrom && $date <= $filterTo;
+    if ($date < $filterFrom || $date > $filterTo) {
+        return false;
+    }
+    if ($restoFilter > 0 && (int) ($r['table']['restaurant']['restaurant_id'] ?? 0) !== $restoFilter) {
+        return false;
+    }
+    return true;
 });
 
 $filteredPayments = array_filter($payments, function ($p) use ($filterFrom, $filterTo) {
@@ -101,7 +123,7 @@ $noShowText = $noShowRate . '%';
 $chartDays = [];
 for ($i = 9; $i >= 0; $i--) {
     $d = date('Y-m-d', strtotime($filterTo . " -$i days"));
-    $count = count(array_filter($reservations, fn ($r) => substr((string) ($r['reservation_date'] ?? ''), 0, 10) === $d));
+    $count = count(array_filter($filtered, fn ($r) => substr((string) ($r['reservation_date'] ?? ''), 0, 10) === $d));
     $chartDays[] = ['label' => date('d M', strtotime($d)), 'count' => $count];
 }
 $maxCount = max(1, max(array_column($chartDays, 'count')));
@@ -122,8 +144,8 @@ $maxCount = max(1, max(array_column($chartDays, 'count')));
                         <p class="text-sm text-[#66574b] mt-1">Ringkasan performa berdasarkan data reservasi & pembayaran (FR-012).</p>
                     </div>
                     <div class="flex gap-2">
-                        <a href="export_laporan.php?type=pdf&from=<?= urlencode($filterFrom) ?>&to=<?= urlencode($filterTo) ?>" class="px-4 py-2 rounded-xl bg-[#5e392e] hover:bg-[#4a2c24] text-white text-xs font-bold transition shadow-sm">Export PDF</a>
-                        <a href="export_laporan.php?type=excel&from=<?= urlencode($filterFrom) ?>&to=<?= urlencode($filterTo) ?>" class="px-4 py-2 rounded-xl border border-[#eadfd4] text-stone-600 hover:bg-stone-50 text-xs font-bold transition">Export Excel</a>
+                        <a href="export_laporan.php?type=pdf&from=<?= urlencode($filterFrom) ?>&to=<?= urlencode($filterTo) ?>&restaurant_id=<?= $restoFilter ?>" class="px-4 py-2 rounded-xl bg-[#5e392e] hover:bg-[#4a2c24] text-white text-xs font-bold transition shadow-sm">Export PDF</a>
+                        <a href="export_laporan.php?type=excel&from=<?= urlencode($filterFrom) ?>&to=<?= urlencode($filterTo) ?>&restaurant_id=<?= $restoFilter ?>" class="px-4 py-2 rounded-xl border border-[#eadfd4] text-stone-600 hover:bg-stone-50 text-xs font-bold transition">Export Excel</a>
                     </div>
                 </div>
 
@@ -134,6 +156,18 @@ $maxCount = max(1, max(array_column($chartDays, 'count')));
                          ke halaman default/dashboard. -->
                     <input type="hidden" name="page" value="laporan">
                     <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-[#8a5d49] mb-2">Restoran</label>
+                        <select name="restaurant_id" onchange="this.form.submit()" class="px-4 py-2.5 rounded-xl border border-[#eadfd4] bg-white text-sm outline-none focus:border-[#8a5d49] transition">
+                            <option value="">Semua Restoran</option>
+                            <?php foreach ($restaurants as $resto): ?>
+                                <?php $rid = (int) ($resto['restaurant_id'] ?? 0); ?>
+                                <option value="<?= $rid ?>" <?= $rid === $restoFilter ? 'selected' : '' ?>>
+                                    <?= e($resto['name'] ?? $resto['restaurant_name'] ?? 'Restoran') ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-[#8a5d49] mb-2">Dari</label>
                         <input type="date" name="from" value="<?= e($filterFrom) ?>" class="px-4 py-2.5 rounded-xl border border-[#eadfd4] bg-white text-sm outline-none focus:border-[#8a5d49] transition">
                     </div>
@@ -143,7 +177,7 @@ $maxCount = max(1, max(array_column($chartDays, 'count')));
                     </div>
                     <div class="flex gap-2">
                         <button type="submit" class="bg-[#5e392e] hover:bg-[#4a2c24] text-white text-xs font-bold py-2.5 px-6 rounded-xl transition shadow-sm">Tampilkan</button>
-                        <a href="<?= route('laporan', ['range' => '7d']) ?>" class="px-4 py-2.5 rounded-xl border border-[#eadfd4] text-stone-600 hover:bg-stone-50 text-xs font-bold transition">7 Hari</a>
+                        <a href="<?= route('laporan', ['range' => '7d', 'restaurant_id' => $restoFilter ?: null]) ?>" class="px-4 py-2.5 rounded-xl border border-[#eadfd4] text-stone-600 hover:bg-stone-50 text-xs font-bold transition">7 Hari</a>
                     </div>
                 </form>
 

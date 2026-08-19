@@ -70,8 +70,19 @@ $statusBadges = [
                     <div class="p-4 rounded-2xl border text-sm <?= $messageType === 'green' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-700' ?>"><?= e($message) ?></div>
                 <?php endif; ?>
 
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <h2 class="font-display text-lg font-bold text-[#201913]">Daftar Reservasi</h2>
+                    <div class="relative md:w-80">
+                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a39a8f]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input type="text" id="search-reservasi" placeholder="Cari kode, nama, restoran, status..."
+                               class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#eadfd4] bg-white text-sm outline-none focus:border-[#8a5d49] transition">
+                    </div>
+                </div>
+
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-[#4f4338]">
+                    <table data-paginate data-paginate-search="search-reservasi" class="w-full text-sm text-left text-[#4f4338]">
                         <thead>
                             <tr class="border-b border-[#eadfd4] text-[#8a5d49] text-xs uppercase tracking-wider">
                                 <th class="py-3 pr-4">Kode</th>
@@ -85,10 +96,10 @@ $statusBadges = [
                                 <th class="py-3 pr-4">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbody-reservasi">
                             <?php foreach ($reservations as $r): ?>
                                 <?php $rid = (int) ($r['reservation_id'] ?? 0); ?>
-                                <tr class="border-b border-[#eadfd4]">
+                                <tr class="border-b border-[#eadfd4]" data-search="<?= e(strtolower(($r['booking_code'] ?? '') . ' ' . ($r['user']['name'] ?? '') . ' ' . ($r['table']['restaurant']['name'] ?? '') . ' ' . ($r['table']['table_number'] ?? '') . ' ' . ($r['status'] ?? ''))) ?>">
                                     <td class="py-3 pr-4 font-mono text-xs font-bold text-[#201913]"><?= e($r['booking_code'] ?? '-') ?></td>
                                     <td class="py-3 pr-4"><?= e($r['user']['name'] ?? 'Tamu') ?></td>
                                     <td class="py-3 pr-4"><?= e(substr((string) ($r['reservation_date'] ?? ''), 0, 10)) ?></td>
@@ -113,6 +124,19 @@ $statusBadges = [
                         </tbody>
                     </table>
                 </div>
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var input = document.getElementById('search-reservasi');
+                    if (!input) return;
+                    input.addEventListener('input', function () {
+                        var q = this.value.toLowerCase().trim();
+                        document.querySelectorAll('#tbody-reservasi tr').forEach(function (row) {
+                            row.style.display = row.dataset.search.indexOf(q) !== -1 ? '' : 'none';
+                        });
+                    });
+                });
+                </script>
 
             </div>
         </div>

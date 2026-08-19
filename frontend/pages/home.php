@@ -31,9 +31,6 @@ $featuredMenu = [];
       <h1 class="mt-5 max-w-3xl font-display text-5xl leading-[0.95] tracking-tight text-[#201913] md:text-6xl">
         Kemewahan Rasa di Setiap Sajian.
       </h1>
-      <h2 class="mt-5 max-w-3xl font-display text-5xl leading-[0.95] tracking-tight text-[#201913] md:text-6xl">
-        Good Food, Good Mood.
-      </h2>
       <p class="mt-6 max-w-2xl text-lg leading-8 text-[#4f4338]">
         <?= e($restaurantName) ?> Dari meja reservasi hingga pesanan siap saji, menyatukan alur kerja restoran dalam satu genggaman. Tampil berkelas, layani lebih cepat.
       </p>

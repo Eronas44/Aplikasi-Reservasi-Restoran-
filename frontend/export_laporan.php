@@ -48,6 +48,22 @@ if (!in_array($type, ['pdf', 'excel'], true)) {
 
 $filterFrom = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($_GET['from'] ?? '')) ? $_GET['from'] : date('Y-m-d', strtotime('-30 days'));
 $filterTo   = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($_GET['to'] ?? ''))   ? $_GET['to']   : date('Y-m-d');
+$restoFilter = (int) ($_GET['restaurant_id'] ?? 0);
+
+// Ambil daftar restoran (untuk nama laporan & validasi filter)
+$restaurants = [];
+$restoResult = api_get(API_RESTAURANTS . '?limit=200');
+if ($restoResult['ok']) {
+    $raw = $restoResult['data']['data'] ?? [];
+    $restaurants = $raw['data'] ?? $raw;
+}
+$selectedRestoName = 'Semua Restoran';
+foreach ($restaurants as $resto) {
+    if ((int) ($resto['restaurant_id'] ?? 0) === $restoFilter) {
+        $selectedRestoName = $resto['name'] ?? 'Restoran';
+        break;
+    }
+}
 
 // Ambil data dari backend
 $reservations = [];
@@ -74,9 +90,15 @@ if ($tablesResult['ok']) {
     }
 }
 
-$filtered = array_values(array_filter($reservations, function ($r) use ($filterFrom, $filterTo) {
+$filtered = array_values(array_filter($reservations, function ($r) use ($filterFrom, $filterTo, $restoFilter) {
     $date = substr((string) ($r['reservation_date'] ?? ''), 0, 10);
-    return $date >= $filterFrom && $date <= $filterTo;
+    if ($date < $filterFrom || $date > $filterTo) {
+        return false;
+    }
+    if ($restoFilter > 0 && (int) ($r['table']['restaurant']['restaurant_id'] ?? 0) !== $restoFilter) {
+        return false;
+    }
+    return true;
 }));
 
 $filteredPayments = array_filter($payments, function ($p) use ($filterFrom, $filterTo) {
@@ -147,15 +169,7 @@ function status_humanize($status) {
     return isset($map[$status]) ? $map[$status] : ucfirst(str_replace('_', ' ', $status));
 }
 
-$restoName = 'Kafiber Restoran';
-$restoResult = api_get(API_RESTAURANTS . '?limit=1');
-if ($restoResult['ok']) {
-    $raw = $restoResult['data']['data'] ?? [];
-    $restoList = $raw['data'] ?? $raw;
-    if (!empty($restoList) && !empty($restoList[0]['name'])) {
-        $restoName = $restoList[0]['name'];
-    }
-}
+$restoName = $selectedRestoName !== 'Semua Restoran' ? $selectedRestoName : 'Kafiber Restoran';
 
 $periodText = fmt_date($filterFrom) . ' s.d. ' . fmt_date($filterTo);
 $generatedAt = date('d M Y H:i');

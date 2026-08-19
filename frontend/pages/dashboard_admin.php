@@ -125,34 +125,11 @@ $recentReservations = array_slice($sortedReservations, 0, 5);
                 <?php endforeach; ?>
             </div>
 
-            <!-- Menu Kelola Cepat -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <?php
-                $quickActions = [
-                    ['kelola_meja', 'Kelola Meja & Layout'],
-                    ['kelola_menu', 'Kelola Menu & Kategori'],
-                    ['kelola_restoran', 'Kelola Restoran'],
-                    ['kelola_reservasi', 'Kelola Reservasi'],
-                    ['kelola_staf', 'Kelola Akun Staf'],
-                    ['jam_operasional', 'Jam Operasional'],
-                    ['kebijakan', 'Deposit & Refund'],
-                    ['laporan', 'Laporan & Analitik'],
-                ];
-                ?>
-                <?php foreach ($quickActions as [$slug, $label]): ?>
-                    <a href="<?= route($slug) ?>" class="bg-white/80 border border-[#eadfd4] rounded-2xl p-5 shadow-sm hover:border-[#8a5d49] transition">
-                        <span class="block text-xs font-bold uppercase tracking-wider text-[#8a5d49] mb-1">Atur</span>
-                        <span class="font-display font-bold text-[#201913]"><?= e($label) ?></span>
-                        <span class="block mt-2 text-xs font-bold text-[#8a5d49]">Buka →</span>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-
             <!-- Reservasi Terbaru -->
             <div class="bg-white/90 border border-[#eadfd4] rounded-3xl p-6 md:p-8 shadow-sm space-y-4">
                 <h2 class="font-display text-2xl font-bold text-[#201913]">Reservasi Terbaru</h2>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-[#4f4338]">
+                    <table data-paginate class="w-full text-sm text-left text-[#4f4338]">
                         <thead>
                             <tr class="border-b border-[#eadfd4] text-[#8a5d49] text-xs uppercase tracking-wider">
                                 <th class="py-3 pr-4">Kode</th>

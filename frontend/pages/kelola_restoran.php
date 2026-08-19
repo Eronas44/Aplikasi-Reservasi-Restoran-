@@ -53,12 +53,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'is_active' => $isActive,
         ];
 
-        $hasImage = isset($_FILES['image'])
-            && ($_FILES['image']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK
-            && is_uploaded_file($_FILES['image']['tmp_name'] ?? '');
+        // Kumpulkan SEMUA file gambar yang diupload (bisa lebih dari satu).
+        $uploadedFiles = [];
+        if (!empty($_FILES['images']['name']) && is_array($_FILES['images']['name'])) {
+            foreach ($_FILES['images']['name'] as $i => $name) {
+                $tmp = $_FILES['images']['tmp_name'][$i] ?? '';
+                if (($_FILES['images']['error'][$i] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK && is_uploaded_file($tmp)) {
+                    $uploadedFiles[] = [
+                        'tmp_name' => $tmp,
+                        'name'     => $name,
+                        'type'     => $_FILES['images']['type'][$i] ?? 'application/octet-stream',
+                    ];
+                }
+            }
+        }
 
-        $result = $hasImage
-            ? api_upload(API_RESTAURANTS, $payload, ['image' => $_FILES['image']], 'POST')
+        $result = !empty($uploadedFiles)
+            ? api_upload(API_RESTAURANTS, $payload, ['images' => $uploadedFiles], 'POST')
             : api_request('POST', API_RESTAURANTS, $payload);
 
         if ($result['ok']) {
@@ -113,7 +124,7 @@ if ($restoResult['ok']) {
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold uppercase tracking-wider text-[#8a5d49] mb-2">Nama Restoran</label>
-                            <input type="text" name="name" required placeholder="Kafiber Menteng"
+                            <input type="text" name="name" required placeholder="Contoh Kafiber Malang"
                                    class="w-full px-4 py-3 rounded-xl border border-[#eadfd4] bg-white text-sm text-[#201913] outline-none focus:border-[#8a5d49] transition">
                         </div>
                         <div>
@@ -136,12 +147,15 @@ if ($restoResult['ok']) {
                             <input type="email" name="email" placeholder="outlet@restoran.com"
                                    class="w-full px-4 py-3 rounded-xl border border-[#eadfd4] bg-white text-sm text-[#201913] outline-none focus:border-[#8a5d49] transition">
                         </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-[#8a5d49] mb-2">Foto Restoran (opsional, max 2MB)</label>
-                            <input type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif"
+                        <div class="md:col-span-3">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-[#8a5d49] mb-2">Foto Restoran (bisa upload banyak gambar untuk slideshow, masing-masing max 20MB)</label>
+                            <input type="file" name="images[]" multiple accept="image/jpeg,image/png,image/webp,image/gif"
+                                   id="restoImagesInput"
                                    class="w-full px-4 py-3 rounded-xl border border-[#eadfd4] bg-white text-sm outline-none focus:border-[#8a5d49] transition file:mr-3 file:rounded-lg file:border-0 file:bg-[#5e392e] file:px-4 file:py-2 file:text-xs file:font-bold file:text-white hover:file:bg-[#4a2c24]">
+                            <p class="text-[11px] text-[#8a5d49] mt-1.5">💡 Bisa pilih banyak gambar sekaligus (tahan <kbd class="px-1.5 py-0.5 rounded bg-[#efebe4] border border-[#eadfd4]">Ctrl</kbd>/<kbd class="px-1.5 py-0.5 rounded bg-[#efebe4] border border-[#eadfd4]">Shift</kbd>) <b>atau</b> pilih lagi nanti — gambar baru <b>menambah</b>, tidak mengganti. Restoran akan tampil sebagai <b>slideshow</b> di Dashboard &amp; Preview Restoran.</p>
+                            <div id="restoImagesPreview" class="hidden mt-3 flex flex-wrap gap-3"></div>
                         </div>
-                        <div class="md:col-span-1 flex items-end pb-1">
+                        <div class="md:col-span-3 flex items-center">
                             <label class="inline-flex items-center gap-2 text-sm font-bold text-[#5e392e]">
                                 <input type="checkbox" name="is_active" value="1" checked
                                        class="w-4 h-4 rounded border-[#eadfd4] text-[#5e392e] focus:ring-[#8a5d49]">
@@ -156,7 +170,7 @@ if ($restoResult['ok']) {
 
                 <!-- Daftar Restoran -->
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-[#4f4338]">
+                    <table data-paginate class="w-full text-sm text-left text-[#4f4338]">
                         <thead>
                             <tr class="border-b border-[#eadfd4] text-[#8a5d49] text-xs uppercase tracking-wider">
                                 <th class="py-3 pr-4">Foto</th>
@@ -172,8 +186,16 @@ if ($restoResult['ok']) {
                             <?php foreach ($restoList as $r): ?>
                                 <tr class="border-b border-[#eadfd4]">
                                     <td class="py-3 pr-4">
-                                        <?php $imgUrl = api_resto_image($r['image_url'] ?? '', (int) ($r['restaurant_id'] ?? 0)); ?>
-                                        <img src="<?= e($imgUrl) ?>" alt="<?= e($r['name'] ?? '') ?>" class="w-14 h-14 object-cover rounded-xl border border-[#eadfd4]" loading="lazy">
+                                        <?php
+                                        $imgUrl = api_resto_image($r['image_url'] ?? '', (int) ($r['restaurant_id'] ?? 0));
+                                        $imgCount = count(array_filter((array) ($r['image_urls'] ?? [])));
+                                        ?>
+                                        <div class="flex items-center gap-2">
+                                            <img src="<?= e($imgUrl) ?>" alt="<?= e($r['name'] ?? '') ?>" class="w-14 h-14 object-cover rounded-xl border border-[#eadfd4]" loading="lazy">
+                                            <?php if ($imgCount > 1): ?>
+                                                <span class="text-[10px] font-bold text-[#5e392e] bg-[#efebe4] rounded-full px-2 py-0.5" title="Gambar slideshow"><?= $imgCount ?> foto</span>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                     <td class="py-3 pr-4 font-bold text-[#201913]">
                                         <?= e($r['name'] ?? '') ?>
@@ -206,3 +228,58 @@ if ($restoResult['ok']) {
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+    var input = document.getElementById('restoImagesInput');
+    var preview = document.getElementById('restoImagesPreview');
+    if (!input || !preview) { return; }
+
+    // Semua file terpilih (terakumulasi dari beberapa sesi pemilihan).
+    // Tiap kali user memilih lagi, file BARU di-append, bukan mengganti.
+    var allFiles = [];
+
+    function sameFile(a, b) {
+        return a.name === b.name && a.size === b.size && a.lastModified === b.lastModified;
+    }
+
+    function syncInput() {
+        var dt = new DataTransfer();
+        allFiles.forEach(function (f) { dt.items.add(f); });
+        input.files = dt.files;
+    }
+
+    function renderPreviews() {
+        preview.innerHTML = '';
+        allFiles.forEach(function (file, idx) {
+            var wrap = document.createElement('div');
+            wrap.className = 'relative group';
+            wrap.innerHTML = '<img alt="Preview ' + (idx + 1) + '" class="w-20 h-20 object-cover rounded-xl border border-[#eadfd4] bg-white shadow-sm">'
+                + '<button type="button" aria-label="Hapus foto" class="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] font-bold shadow hover:bg-red-700 transition">&times;</button>';
+            var img = wrap.querySelector('img');
+            var del = wrap.querySelector('button');
+            var reader = new FileReader();
+            reader.onload = function (e) { img.src = e.target.result; };
+            reader.readAsDataURL(file);
+            del.addEventListener('click', function () {
+                allFiles.splice(idx, 1);
+                syncInput();
+                renderPreviews();
+            });
+            preview.appendChild(wrap);
+        });
+        preview.classList.toggle('hidden', allFiles.length === 0);
+        preview.classList.toggle('flex', allFiles.length > 0);
+    }
+
+    // Pilih file baru -> APPEND ke pilihan lama (dedupe by nama+ukuran+waktu).
+    input.addEventListener('change', function () {
+        Array.prototype.forEach.call(input.files || [], function (f) {
+            var dup = allFiles.some(function (m) { return sameFile(m, f); });
+            if (!dup) { allFiles.push(f); }
+        });
+        syncInput();
+        renderPreviews();
+    });
+})();
+</script>

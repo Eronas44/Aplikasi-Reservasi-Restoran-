@@ -102,7 +102,7 @@ $draft = $_SESSION['current_reservation'] ?? [];
                         <h1 class="font-display text-3xl font-bold text-[#201913] mt-1">Pilih Tanggal & Waktu Kunjungan</h1>
                         <p class="text-sm text-[#66574b] mt-1">Restoran: <strong class="text-[#201913]"><?= e($restoNama) ?></strong></p>
                     </div>
-                    <a href="<?= route('preview_restoran') ?>" class="text-xs font-bold text-[#8a5d49] hover:underline">Ganti Restoran →</a>
+                    <a href="<?= route('dashboard') ?>" class="text-xs font-bold text-[#8a5d49] hover:underline">← Kembali ke Dashboard</a>
                 </div>
 
                 <!-- Pilih Restoran (ganti langsung, konteks diteruskan ke halaman menu) -->

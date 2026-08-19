@@ -145,9 +145,19 @@ $adminOnlyPages = [
     'jam_operasional', 'kebijakan', 'kelola_staf', 'laporan',
 ];
 
+// Halaman alur reservasi pelanggan: bila dikunjungi saat belum login,
+// setelah login pengguna otomatis kembali ke halaman tersebut.
+$reservationFlowPages = [
+    'reservasi', 'pilih_meja', 'menu', 'menu_view',
+    'pembayaran', 'instruksi_pembayaran', 'sukses_reservasi', 'riwayat_reservasi',
+];
+
 $userRole = isset($_SESSION['role']) ? $_SESSION['role'] : 'customer';
 
 if (in_array($page, $authRequiredPages, true) && !is_user_logged_in()) {
+    if (in_array($page, $reservationFlowPages, true)) {
+        $_SESSION['login_redirect'] = $_SERVER['REQUEST_URI'] ?? '';
+    }
     header('Location: ' . route('login'));
     exit;
 }

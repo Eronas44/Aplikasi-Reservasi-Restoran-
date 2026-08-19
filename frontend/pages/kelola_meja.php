@@ -189,8 +189,18 @@ if ($restoResult['ok']) {
                 </form>
 
                 <!-- Daftar Meja -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <h2 class="font-display text-lg font-bold text-[#201913]">Daftar Meja</h2>
+                    <div class="relative md:w-72">
+                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a39a8f]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input type="text" id="search-meja" placeholder="Cari nomor meja, restoran, status..."
+                               class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#eadfd4] bg-white text-sm outline-none focus:border-[#8a5d49] transition">
+                    </div>
+                </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-[#4f4338]">
+                    <table data-paginate data-paginate-search="search-meja" class="w-full text-sm text-left text-[#4f4338]">
                         <thead>
                             <tr class="border-b border-[#eadfd4] text-[#8a5d49] text-xs uppercase tracking-wider">
                                 <th class="py-3 pr-4">No</th>
@@ -202,9 +212,9 @@ if ($restoResult['ok']) {
                                 <th class="py-3 pr-4">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbody-meja">
                             <?php foreach ($tables as $t): ?>
-                                <tr class="border-b border-[#eadfd4]">
+                                <tr class="border-b border-[#eadfd4]" data-search="<?= e(strtolower(($t['table_number'] ?? '') . ' ' . ($t['restaurant']['name'] ?? '') . ' ' . ($t['location_area'] ?? '') . ' ' . ($t['status'] ?? ''))) ?>">
                                     <td class="py-3 pr-4 font-bold text-[#201913]"><?= e($t['table_number']) ?></td>
                                     <td class="py-3 pr-4"><?= e($t['restaurant']['name'] ?? '-') ?></td>
                                     <td class="py-3 pr-4"><?= (int) $t['capacity'] ?> org</td>
@@ -226,6 +236,19 @@ if ($restoResult['ok']) {
                         </tbody>
                     </table>
                 </div>
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var input = document.getElementById('search-meja');
+                    if (!input) return;
+                    input.addEventListener('input', function () {
+                        var q = this.value.toLowerCase().trim();
+                        document.querySelectorAll('#tbody-meja tr').forEach(function (row) {
+                            row.style.display = row.dataset.search.indexOf(q) !== -1 ? '' : 'none';
+                        });
+                    });
+                });
+                </script>
 
             </div>
         </div>

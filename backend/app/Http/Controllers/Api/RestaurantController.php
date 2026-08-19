@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRestaurantRequest;
 use App\Models\Restaurant;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -40,10 +41,19 @@ class RestaurantController extends Controller
     public function store(StoreRestaurantRequest $request): JsonResponse
     {
         $data = $request->validated();
-        unset($data['image']);
+        unset($data['image'], $data['images']);
 
-        if ($request->hasFile('image')) {
-            $data['image_url'] = $this->storeImage($request->file('image'));
+        // Kolom rating NOT NULL (default 0) — jangan kirim null eksplisit.
+        if (array_key_exists('rating', $data) && $data['rating'] === null) {
+            unset($data['rating']);
+        }
+
+        $imageUrls = $this->collectImageUrls($request);
+
+        if (!empty($imageUrls)) {
+            $data['image_urls'] = $imageUrls;
+            // Gambar pertama dijadikan sampul agar kompatibel dengan tampilan lama.
+            $data['image_url'] = $imageUrls[0];
         }
 
         $restaurant = Restaurant::query()->create($data);
@@ -58,10 +68,18 @@ class RestaurantController extends Controller
     {
         $model = Restaurant::query()->findOrFail($restaurant);
         $data = $request->validated();
-        unset($data['image']);
+        unset($data['image'], $data['images']);
 
-        if ($request->hasFile('image')) {
-            $data['image_url'] = $this->storeImage($request->file('image'));
+        // Kolom rating NOT NULL (default 0) — jangan kirim null eksplisit.
+        if (array_key_exists('rating', $data) && $data['rating'] === null) {
+            unset($data['rating']);
+        }
+
+        $imageUrls = $this->collectImageUrls($request);
+
+        if (!empty($imageUrls)) {
+            $data['image_urls'] = $imageUrls;
+            $data['image_url'] = $imageUrls[0];
         }
 
         $model->update($data);
@@ -75,11 +93,46 @@ class RestaurantController extends Controller
     public function destroy(int $restaurant): JsonResponse
     {
         $model = Restaurant::query()->findOrFail($restaurant);
+
+        // Hapus file gambar (cover + daftar slideshow) agar tidak tersisa di storage.
+        $paths = array_values(array_unique(array_filter(array_merge(
+            [$model->image_url],
+            (array) $model->image_urls,
+        ))));
+
+        foreach ($paths as $path) {
+            $relative = ltrim(preg_replace('#^/?media/#', '', (string) $path), '/');
+            if ($relative !== '') {
+                Storage::disk('public')->delete($relative);
+            }
+        }
+
         $model->delete();
 
         return response()->json([
             'message' => 'Restaurant deleted.',
         ]);
+    }
+
+    /**
+     * Kumpulkan semua file gambar (single field `image` DAN multi field
+     * `images[]`) lalu simpan ke storage. Mengembalikan daftar path publik.
+     */
+    private function collectImageUrls(Request $request): array
+    {
+        $urls = [];
+
+        if ($request->hasFile('image')) {
+            $urls[] = $this->storeImage($request->file('image'));
+        }
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $urls[] = $this->storeImage($file);
+            }
+        }
+
+        return array_values(array_unique(array_filter($urls)));
     }
 
     /**

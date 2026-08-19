@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\HolidayController;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\OpeningHourController;
+use App\Http\Controllers\Api\ShiftController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PolicyController;
 use App\Http\Controllers\Api\ReservationController;
@@ -88,6 +90,9 @@ Route::prefix('v1')
 
             Route::get('/opening-hours', [OpeningHourController::class, 'index']);
             Route::get('/opening-hours/{openingHour}', [OpeningHourController::class, 'show']);
+
+            Route::apiResource('holidays', HolidayController::class);
+            Route::apiResource('shifts', ShiftController::class);
 
             Route::apiResource('policies', PolicyController::class);
         });

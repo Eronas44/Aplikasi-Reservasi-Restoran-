@@ -100,15 +100,23 @@ $hoursText = array_slice($hoursText, 0, 7);
       </div>
     </div>
 
-    <!-- Gambar Restoran -->
+    <!-- Gambar Restoran (slideshow bila ada banyak gambar) -->
     <div class="w-full h-64 md:h-[380px] rounded-2xl overflow-hidden border border-[#eadfd4] bg-[#f4ece1] flex items-center justify-center">
-      <?php if ($restoImg): ?>
-        <img src="<?= e($restoImg) ?>" alt="<?= e($restoName) ?>" class="w-full h-full object-cover">
-      <?php else: ?>
-        <svg class="w-20 h-20 text-[#c9a98a]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 9.75L12 4l9 5.75V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.75z"/>
-        </svg>
-      <?php endif; ?>
+      <?php
+      $restoSlides = api_resto_images($currentResto['image_urls'] ?? [], $currentResto['image_url'] ?? '', $restoId);
+      ?>
+      <div class="js-slideshow relative w-full h-full" data-interval="3500">
+        <div class="js-slideshow-track flex h-full w-full transition-transform duration-500">
+          <?php foreach ($restoSlides as $slide): ?>
+            <img src="<?= e($slide) ?>" alt="<?= e($restoName) ?>" class="js-slide w-full h-full object-cover shrink-0" loading="lazy">
+          <?php endforeach; ?>
+        </div>
+        <?php if (count($restoSlides) > 1): ?>
+          <button type="button" class="js-slideshow-prev absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-black/35 text-white text-lg hover:bg-black/55 transition" aria-label="Gambar sebelumnya">&#8249;</button>
+          <button type="button" class="js-slideshow-next absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-black/35 text-white text-lg hover:bg-black/55 transition" aria-label="Gambar berikutnya">&#8250;</button>
+          <div class="js-slideshow-dots absolute bottom-3 inset-x-0 flex items-center justify-center gap-1.5"></div>
+        <?php endif; ?>
+      </div>
     </div>
 
     <!-- Statistik Singkat -->

@@ -23,6 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (function_exists('api_register')) {
+            if (function_exists('api_reset_backend_session')) {
+                api_reset_backend_session();
+            }
+
             $result = api_register([
                 'name' => $name,
                 'email' => $email,

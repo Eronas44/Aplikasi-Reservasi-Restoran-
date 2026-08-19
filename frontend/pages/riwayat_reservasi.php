@@ -73,7 +73,7 @@ $statusMap = [
                 <!-- Data dari Backend API -->
                 <?php if (!empty($riwayat_api)): ?>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left text-[#4f4338]">
+                        <table data-paginate class="w-full text-sm text-left text-[#4f4338]">
                             <thead>
                                 <tr class="border-b border-[#eadfd4] text-[#8a5d49] text-xs uppercase tracking-wider">
                                     <th class="py-3 pr-4">Kode</th>

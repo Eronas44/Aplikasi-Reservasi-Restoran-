@@ -124,7 +124,7 @@ $refundRules = [
                     <div class="bg-[#fcfaf7] border border-[#eadfd4] rounded-2xl p-6 space-y-4">
                         <h2 class="font-display text-lg font-bold text-[#201913]">Ambang Batas Refund Berjenjang (FR-014)</h2>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left text-[#4f4338]">
+                            <table data-paginate class="w-full text-sm text-left text-[#4f4338]">
                                 <thead>
                                     <tr class="border-b border-[#eadfd4] text-[#8a5d49] text-xs uppercase tracking-wider">
                                         <th class="py-3 pr-4">Batas Waktu Pembatalan</th>

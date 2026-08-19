@@ -29,6 +29,24 @@ if (!function_exists('api_cookie_file')) {
     }
 }
 
+if (!function_exists('api_reset_backend_session')) {
+    /**
+     * Hapus file cookie sesi backend (cookie jar) milik sesi frontend saat ini.
+     *
+     * Dipakai sebelum login/register: cookie jar bisa saja masih menyimpan sesi
+     * backend yang valid dari proses sebelumnya, padahal sesi frontend sudah
+     * dianggap logout. Jika dibiarkan, middleware guest backend merespons login
+     * dengan redirect (302) ber-body kosong sehingga gagal di-parse sebagai JSON.
+     */
+    function api_reset_backend_session()
+    {
+        $cookieFile = api_cookie_file();
+        if (is_file($cookieFile)) {
+            @unlink($cookieFile);
+        }
+    }
+}
+
 if (!function_exists('api_request')) {
     /**
      * Kirim request HTTP ke backend API.
@@ -85,7 +103,11 @@ if (!function_exists('api_request')) {
 
         $decoded = json_decode($body, true);
         if (!is_array($decoded)) {
-            $decoded = ['message' => 'Respons backend tidak valid.', 'raw' => $body];
+            $preview = is_string($body) ? trim(substr($body, 0, 200)) : '';
+            $decoded = [
+                'message' => 'Respons backend tidak valid (HTTP ' . $status . ').',
+                'raw' => $preview,
+            ];
         }
 
         return [
@@ -145,9 +167,16 @@ if (!function_exists('api_upload')) {
     /**
      * Kirim request multipart/form-data (untuk upload file).
      *
+     * Body multipart dibangun manual (boundary) karena PHP/curl tertentu
+     * tidak mendukung array CURLFile bertingkat di CURLOPT_POSTFIELDS.
+     * Dengan cara ini upload BANYAK file pada field yang sama (images[])
+     * maupun satu file per field (image) bekerja konsisten.
+     *
      * @param string $uri       Path endpoint, contoh '/menus'
      * @param array $fields     Data form biasa (key => value)
-     * @param array $files      File upload: field => ['tmp_name', 'name', 'type'] (dari $_FILES)
+     * @param array $files      File upload. Value bisa berupa satu deskriptor
+     *                          ['tmp_name','name','type'] ATAU daftar deskriptor
+     *                          (untuk multi-file, field dikirim sebagai name[]).
      * @param string $method    POST / PUT / PATCH
      *
      * @return array{ok: bool, status: int, data: array}
@@ -157,21 +186,57 @@ if (!function_exists('api_upload')) {
         $method = strtoupper($method);
         $url = API_BASE_URL . '/' . ltrim($uri, '/');
 
-        $post = [];
+        $boundary = '----KafiberForm' . md5(uniqid((string) mt_rand(), true));
+        $body = '';
+
+        $appendField = function (string $name, string $value) use (&$body, $boundary): void {
+            $body .= '--' . $boundary . "\r\n"
+                . 'Content-Disposition: form-data; name="' . $name . '"' . "\r\n\r\n"
+                . $value . "\r\n";
+        };
+
+        $appendFile = function (string $name, array $file) use (&$body, $boundary): void {
+            if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+                return;
+            }
+            $filename = basename((string) ($file['name'] ?? $file['tmp_name']));
+            $filename = str_replace(['"', "\r", "\n"], '', $filename);
+            $mime = $file['type'] ?? 'application/octet-stream';
+            $content = @file_get_contents($file['tmp_name']);
+
+            $body .= '--' . $boundary . "\r\n"
+                . 'Content-Disposition: form-data; name="' . $name . '"; filename="' . $filename . '"' . "\r\n"
+                . 'Content-Type: ' . $mime . "\r\n\r\n"
+                . $content . "\r\n";
+        };
+
         foreach ($fields as $key => $value) {
-            $post[$key] = (string) ($value ?? '');
+            if (is_array($value)) {
+                foreach ($value as $v) {
+                    $appendField((string) $key, (string) ($v ?? ''));
+                }
+            } else {
+                $appendField((string) $key, (string) ($value ?? ''));
+            }
         }
 
         foreach ($files as $key => $file) {
-            if (!is_array($file) || empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
+            // Banyak file pada field yang sama -> kirim sebagai name[] (images[]).
+            if (is_array($file) && isset($file[0]) && is_array($file[0])) {
+                foreach ($file as $sub) {
+                    if (is_array($sub)) {
+                        $appendFile((string) $key . '[]', $sub);
+                    }
+                }
                 continue;
             }
-            $post[$key] = new CURLFile(
-                $file['tmp_name'],
-                $file['type'] ?? 'application/octet-stream',
-                $file['name'] ?? basename($file['tmp_name'])
-            );
+
+            if (is_array($file)) {
+                $appendFile((string) $key, $file);
+            }
         }
+
+        $body .= '--' . $boundary . "--\r\n";
 
         $ch = curl_init($url);
 
@@ -181,20 +246,23 @@ if (!function_exists('api_upload')) {
             CURLOPT_TIMEOUT => 30,
             CURLOPT_CONNECTTIMEOUT => 5,
             CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_POSTFIELDS => $post,
-            CURLOPT_HTTPHEADER => ['Accept: application/json'],
+            CURLOPT_POSTFIELDS => $body,
+            CURLOPT_HTTPHEADER => [
+                'Accept: application/json',
+                'Content-Type: multipart/form-data; boundary=' . $boundary,
+            ],
             CURLOPT_COOKIEFILE => api_cookie_file(),
             CURLOPT_COOKIEJAR => api_cookie_file(),
         ];
 
         curl_setopt_array($ch, $options);
 
-        $body = curl_exec($ch);
+        $bodyResult = curl_exec($ch);
         $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $error = curl_error($ch);
         curl_close($ch);
 
-        if ($body === false) {
+        if ($bodyResult === false) {
             return [
                 'ok' => false,
                 'status' => 0,
@@ -202,9 +270,9 @@ if (!function_exists('api_upload')) {
             ];
         }
 
-        $decoded = json_decode($body, true);
+        $decoded = json_decode($bodyResult, true);
         if (!is_array($decoded)) {
-            $decoded = ['message' => 'Respons backend tidak valid.', 'raw' => $body];
+            $decoded = ['message' => 'Respons backend tidak valid.', 'raw' => $bodyResult];
         }
 
         return [
